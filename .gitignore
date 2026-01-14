@@ -1,0 +1,97 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Logs ###
+*.log
+logs/
+spring.log
+
+### Maven ###
+.mvn/
+mvnw
+mvnw.cmd
+
+### Environment & Properties ###
+application-local.yml
+application-local.properties
+application-dev.yml
+application-dev.properties
+application-prod.yml
+application-prod.properties
+*.env
+.env
+.env.local
+.env.*.local
+
+### Secrets & Credentials ###
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+### OS Generated Files ###
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.swp
+*~
+
+### Package Files ###
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Test Output ###
+test-output/
+surefire-reports/
+
+### Coverage Reports ###
+jacoco.exec
+*.exec
+coverage/
+htmlReport/
+
