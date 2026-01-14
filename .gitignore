@@ -49,6 +49,9 @@ application-local.properties
 application-dev.yml
 application-dev.properties
 application-prod.yml
+.env
+.env.local
+.env.production
 application-prod.properties
 *.env
 .env

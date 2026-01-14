@@ -1,4 +1,4 @@
-package org.murat.orion.AuthDomain.Service;
+package org.murat.orion.AuthDomain.Config;
 
 import io.jsonwebtoken.Jwts;
 import org.murat.orion.AuthDomain.Entity.User;

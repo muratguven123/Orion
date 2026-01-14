@@ -2,9 +2,12 @@ package org.murat.orion.AuthDomain.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.murat.orion.AuthDomain.Dto.Request.LoginRequest;
+import org.murat.orion.AuthDomain.Dto.Request.EmailLoginRequest;
 import org.murat.orion.AuthDomain.Dto.Request.RegisterRequest;
+import org.murat.orion.AuthDomain.Dto.Request.SendOtpRequest;
+import org.murat.orion.AuthDomain.Dto.Request.VerifyOtpRequest;
 import org.murat.orion.AuthDomain.Dto.Response.LoginResponse;
+import org.murat.orion.AuthDomain.Dto.Response.OtpResponse;
 import org.murat.orion.AuthDomain.Dto.Response.RegisterResponse;
 import org.murat.orion.AuthDomain.Service.AuthService;
 import org.murat.orion.AuthDomain.Service.EmailLoginStrategy;
@@ -36,18 +39,28 @@ public class AuthController {
      * Email ile login
      */
     @PostMapping("/login/email")
-    public ResponseEntity<LoginResponse> loginWithEmail(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> loginWithEmail(@Valid @RequestBody EmailLoginRequest request) {
         LoginResponse response = emailLoginStrategy.login(request);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * SMS ile login
-     * İlk çağrıda OTP gönderilir, ikinci çağrıda verificationCode ile doğrulama yapılır
+     * SMS Login - Adım 1: OTP Gönder
+     * Telefon numarasına doğrulama kodu gönderir
      */
-    @PostMapping("/login/sms")
-    public ResponseEntity<LoginResponse> loginWithSms(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = smsLoginStrategy.login(request);
+    @PostMapping("/login/sms/send-otp")
+    public ResponseEntity<OtpResponse> sendOtp(@Valid @RequestBody SendOtpRequest request) {
+        OtpResponse response = smsLoginStrategy.sendOtp(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * SMS Login - Adım 2: OTP Doğrula ve Login
+     * Telefon numarası ve doğrulama kodu ile sisteme giriş yapar
+     */
+    @PostMapping("/login/sms/verify")
+    public ResponseEntity<LoginResponse> verifyOtpAndLogin(@Valid @RequestBody VerifyOtpRequest request) {
+        LoginResponse response = smsLoginStrategy.verifyOtpAndLogin(request);
         return ResponseEntity.ok(response);
     }
 }

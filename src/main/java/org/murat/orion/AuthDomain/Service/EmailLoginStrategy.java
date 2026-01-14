@@ -1,11 +1,11 @@
 package org.murat.orion.AuthDomain.Service;
 
 import lombok.RequiredArgsConstructor;
-import org.murat.orion.AuthDomain.Dto.Request.LoginRequest;
+import org.murat.orion.AuthDomain.Dto.Request.EmailLoginRequest;
 import org.murat.orion.AuthDomain.Dto.Response.LoginResponse;
 import org.murat.orion.AuthDomain.Loginİnterface;
 import org.murat.orion.AuthDomain.Repository.UserRepository;
-import org.murat.orion.AuthDomain.Service.JwtService;
+import org.murat.orion.AuthDomain.Config.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
-public class EmailLoginStrategy implements Loginİnterface {
+public class EmailLoginStrategy implements Loginİnterface<EmailLoginRequest> {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(EmailLoginRequest loginRequest) {
         var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 

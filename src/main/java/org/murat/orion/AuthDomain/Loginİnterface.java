@@ -1,10 +1,9 @@
 package org.murat.orion.AuthDomain;
 
-import org.murat.orion.AuthDomain.Dto.Request.LoginRequest;
 import org.murat.orion.AuthDomain.Dto.Response.LoginResponse;
 
-public interface Loginİnterface {
-    LoginResponse login(LoginRequest loginRequest);
+public interface Loginİnterface<T> {
+    LoginResponse login(T loginRequest);
 
     String getLoginType();
 }
