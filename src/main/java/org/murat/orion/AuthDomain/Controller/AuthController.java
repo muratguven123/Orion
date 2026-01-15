@@ -25,39 +25,28 @@ public class AuthController {
     private final EmailLoginStrategy emailLoginStrategy;
     private final SmsLoginStrategy smsLoginStrategy;
 
-    /**
-     * Yeni kullanıcı kaydı
-     * Rol otomatik olarak USER atanır
-     */
+
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Email ile login
-     */
+
     @PostMapping("/login/email")
     public ResponseEntity<LoginResponse> loginWithEmail(@Valid @RequestBody EmailLoginRequest request) {
         LoginResponse response = emailLoginStrategy.login(request);
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * SMS Login - Adım 1: OTP Gönder
-     * Telefon numarasına doğrulama kodu gönderir
-     */
+
     @PostMapping("/login/sms/send-otp")
     public ResponseEntity<OtpResponse> sendOtp(@Valid @RequestBody SendOtpRequest request) {
         OtpResponse response = smsLoginStrategy.sendOtp(request);
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * SMS Login - Adım 2: OTP Doğrula ve Login
-     * Telefon numarası ve doğrulama kodu ile sisteme giriş yapar
-     */
+
     @PostMapping("/login/sms/verify")
     public ResponseEntity<LoginResponse> verifyOtpAndLogin(@Valid @RequestBody VerifyOtpRequest request) {
         LoginResponse response = smsLoginStrategy.verifyOtpAndLogin(request);

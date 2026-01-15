@@ -14,17 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
-    /**
-     * BCrypt algoritması ile şifre hashleme için PasswordEncoder bean'i
-     */
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Security Filter Chain - Hangi endpoint'ler public, hangileri korumalı
-     */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,9 +31,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Auth endpoint'leri herkese açık
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Swagger UI ve API docs herkese açık
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -45,9 +39,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        // Actuator health endpoint
                         .requestMatchers("/actuator/health").permitAll()
-                        // Diğer tüm istekler authentication gerektirir
                         .anyRequest().authenticated()
                 );
 

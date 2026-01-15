@@ -23,23 +23,17 @@ public class SmsLoginStrategy {
     private final SmsService smsService;
     private final JwtService jwtService;
 
-    private static final int OTP_EXPIRY_SECONDS = 300; // 5 dakika
+    private static final int OTP_EXPIRY_SECONDS = 300;
 
-    /**
-     * 1. Adım: OTP gönder
-     * Kullanıcı telefon numarasını girer, sistem OTP oluşturup SMS gönderir
-     */
+
     public OtpResponse sendOtp(SendOtpRequest request) {
         String phoneNumber = request.getPhoneNumber();
 
-        // Kullanıcıyı kontrol et
         userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("Bu telefon numarasına kayıtlı kullanıcı bulunamadı"));
 
-        // OTP oluştur
         String otpCode = otpService.generateOtp(phoneNumber);
 
-        // SMS gönder
         smsService.sendOtp(phoneNumber, otpCode);
 
         log.info("OTP gönderildi - Telefon: {}", maskPhoneNumber(phoneNumber));
@@ -53,22 +47,16 @@ public class SmsLoginStrategy {
                 .build();
     }
 
-    /**
-     * 2. Adım: OTP doğrula ve login yap
-     * Kullanıcı telefon numarası ve OTP kodunu girer, sistem doğrular ve token üretir
-     */
+
     public LoginResponse verifyOtpAndLogin(VerifyOtpRequest request) {
         String phoneNumber = request.getPhoneNumber();
         String verificationCode = request.getVerificationCode();
 
-        // Kullanıcıyı bul
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("Bu telefon numarasına kayıtlı kullanıcı bulunamadı"));
 
-        // OTP doğrula
         otpService.verifyOtp(phoneNumber, verificationCode);
 
-        // Token üret
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
@@ -90,9 +78,6 @@ public class SmsLoginStrategy {
                 .build();
     }
 
-    /**
-     * Telefon numarasını maskeler
-     */
     private String maskPhoneNumber(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.length() < 4) {
             return "***";

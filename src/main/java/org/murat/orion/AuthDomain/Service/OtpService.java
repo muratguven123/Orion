@@ -21,18 +21,13 @@ public class OtpService {
 
     private static final int OTP_LENGTH = 6;
 
-    /**
-     * Yeni OTP oluşturur ve kaydeder
-     */
+
     @Transactional
     public String generateOtp(String phoneNumber) {
-        // Önceki kullanılmamış OTP'leri temizle
         otpRepository.deleteAllByPhoneNumberAndIsUsedFalse(phoneNumber);
 
-        // Yeni OTP kodu oluştur
         String otpCode = generateRandomOtp();
 
-        // OTP entity oluştur ve kaydet
         OtpCode otp = OtpCode.builder()
                 .phoneNumber(phoneNumber)
                 .code(otpCode)
@@ -48,9 +43,7 @@ public class OtpService {
         return otpCode;
     }
 
-    /**
-     * OTP doğrulama işlemi
-     */
+
     @Transactional
     public boolean verifyOtp(String phoneNumber, String code) {
         OtpCode otp = otpRepository.findTopByPhoneNumberAndIsUsedFalseOrderByCreatedAtDesc(phoneNumber)
@@ -82,9 +75,7 @@ public class OtpService {
         return true;
     }
 
-    /**
-     * 6 haneli rastgele OTP oluşturur
-     */
+
     private String generateRandomOtp() {
         SecureRandom random = new SecureRandom();
         StringBuilder otp = new StringBuilder();
@@ -96,9 +87,7 @@ public class OtpService {
         return otp.toString();
     }
 
-    /**
-     * Telefon numarasını loglar için maskeler
-     */
+
     private String maskPhoneNumber(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.length() < 4) {
             return "***";
