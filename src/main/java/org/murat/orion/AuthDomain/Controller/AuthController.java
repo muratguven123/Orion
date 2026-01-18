@@ -3,11 +3,13 @@ package org.murat.orion.AuthDomain.Controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.murat.orion.AuthDomain.Dto.Request.EmailLoginRequest;
+import org.murat.orion.AuthDomain.Dto.Request.RefreshTokenRequest;
 import org.murat.orion.AuthDomain.Dto.Request.RegisterRequest;
 import org.murat.orion.AuthDomain.Dto.Request.SendOtpRequest;
 import org.murat.orion.AuthDomain.Dto.Request.VerifyOtpRequest;
 import org.murat.orion.AuthDomain.Dto.Response.LoginResponse;
 import org.murat.orion.AuthDomain.Dto.Response.OtpResponse;
+import org.murat.orion.AuthDomain.Dto.Response.RefreshTokenResponse;
 import org.murat.orion.AuthDomain.Dto.Response.RegisterResponse;
 import org.murat.orion.AuthDomain.Service.AuthService;
 import org.murat.orion.AuthDomain.Service.EmailLoginStrategy;
@@ -52,5 +54,11 @@ public class AuthController {
         LoginResponse response = smsLoginStrategy.verifyOtpAndLogin(request);
         return ResponseEntity.ok(response);
     }
-}
 
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        RefreshTokenResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(response);
+    }
+}

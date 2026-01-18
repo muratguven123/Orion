@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenResponse {
+public class RefreshTokenResponse {
 
     private String accessToken;
     private String refreshToken;
@@ -21,4 +21,6 @@ public class TokenResponse {
     private LocalDateTime issuedAt;
     private LocalDateTime accessTokenExpiresAt;
     private LocalDateTime refreshTokenExpiresAt;
+    private String status;
+    private String message;
 }
