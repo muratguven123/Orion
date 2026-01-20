@@ -49,7 +49,6 @@ class PaymentControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
         objectMapper = new ObjectMapper();
     }
-
     @Test
     @DisplayName("POST /transfer - Transfer başarılı")
     void transfer_Success() throws Exception {
