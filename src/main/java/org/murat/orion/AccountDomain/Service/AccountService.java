@@ -13,7 +13,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,5 +124,25 @@ public class AccountService {
         if (!account.getUserId().equals(currentUserId)) {
             throw new AccessDeniedException("Bu hesaba erişim yetkiniz yok");
         }
+    }
+    @Transactional
+    public void debit(Long accountId, BigDecimal amount){
+        Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
+
+        if(account.getBalance().compareTo(amount) < 0){
+            throw new RuntimeException("Yetersiz Bakiye"+account.getBalance());
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+    }
+    @Transactional
+    public void credit(Long accountId, BigDecimal amount){
+        Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+    }
+    public boolean hasSufficientBalance(Long accountId, BigDecimal amount){
+        Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
+        return account.getBalance().compareTo(amount) >= 0;
     }
 }

@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class AccountController {
 
     private final AccountService accountService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> createAccount(
             @AuthenticationPrincipal User currentUser,
             @Valid @RequestBody CreateAccountRequest request) {
@@ -30,6 +32,7 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> getAccountById(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
@@ -38,6 +41,7 @@ public class AccountController {
     }
 
     @GetMapping("/number/{accountNumber}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> getAccountByNumber(
             @AuthenticationPrincipal User currentUser,
             @PathVariable String accountNumber) {
@@ -46,18 +50,21 @@ public class AccountController {
     }
 
     @GetMapping("/my-accounts")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountListResponse> getMyAccounts(@AuthenticationPrincipal User currentUser) {
         AccountListResponse response = accountService.getAccountsByUserId(currentUser.getId());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-accounts/active")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountListResponse> getMyActiveAccounts(@AuthenticationPrincipal User currentUser) {
         AccountListResponse response = accountService.getActiveAccountsByUserId(currentUser.getId());
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{accountId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> updateAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId,
@@ -67,6 +74,7 @@ public class AccountController {
     }
 
     @PatchMapping("/{accountId}/deactivate")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> deactivateAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
@@ -75,6 +83,7 @@ public class AccountController {
     }
 
     @PatchMapping("/{accountId}/activate")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccountResponse> activateAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
@@ -83,6 +92,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{accountId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
@@ -91,7 +101,7 @@ public class AccountController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<AccountListResponse> getAccountsByUserId(@PathVariable Long userId) {
         AccountListResponse response = accountService.getAccountsByUserId(userId);
         return ResponseEntity.ok(response);
