@@ -16,6 +16,7 @@ public class AccountİntegrationServiceImpl implements AccountİntegrationServic
     @Override
     public void debit(Long accountid, double amount) {
         accountService.debit(accountid, BigDecimal.valueOf(amount));
+
     }
 
     @Override

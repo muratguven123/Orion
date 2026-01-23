@@ -15,6 +15,7 @@ import org.murat.orion.Payment.Entity.PaymentTransactionType;
 import org.murat.orion.Payment.Repository.PaymentRepository;
 import org.murat.orion.Payment.İnterfaces.AccountİntegrationService;
 import org.murat.orion.Payment.İnterfaces.PaymentStrategy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -43,12 +44,13 @@ class PaymentServiceTest {
     private PaymentStrategy internalTransferStrategy;
 
     private PaymentService paymentService;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @BeforeEach
     void setUp() {
         when(internalTransferStrategy.getPaymentType()).thenReturn(PaymentTransactionType.TRANSFER_INTERNAL);
         List<PaymentStrategy> strategies = List.of(internalTransferStrategy);
-        paymentService = new PaymentService(accountIntegrationService, paymentRepository, strategies);
+        paymentService = new PaymentService(accountIntegrationService, paymentRepository, strategies,applicationEventPublisher);
     }
 
     @Test

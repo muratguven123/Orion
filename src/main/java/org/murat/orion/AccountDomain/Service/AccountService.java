@@ -9,6 +9,9 @@ import org.murat.orion.AccountDomain.Entity.Account;
 import org.murat.orion.AccountDomain.Entity.AccountStatus;
 import org.murat.orion.AccountDomain.Mapper.AccountMapper;
 import org.murat.orion.AccountDomain.Repository.AccountRepository;
+import org.murat.orion.Notification.Events.Account.*;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +23,28 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@EnableAsync
 public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public AccountResponse createAccount(CreateAccountRequest request, Long userId) {
         Account account = accountMapper.toEntity(request, userId);
         Account savedAccount = accountRepository.save(account);
+        AccountCreatedEvent event = new AccountCreatedEvent(
+                savedAccount.getId(),
+                savedAccount.getUserId(),
+                savedAccount.getAccountNumber(),
+                savedAccount.getAccountName(),
+                savedAccount.getAccountType(),
+                savedAccount.getCurrency(),
+                savedAccount.getBalance(),
+                savedAccount.getCreatedAt()
+        );
+        applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(savedAccount);
     }
 
@@ -85,6 +101,15 @@ public class AccountService {
         }
 
         Account updatedAccount = accountRepository.save(account);
+        AccountUpdatedEvent event = AccountUpdatedEvent.builder()
+                .accountId(accountId)
+                .userId(currentUserId)
+                .accountName(updatedAccount.getAccountName())
+                .accountType(updatedAccount.getAccountType())
+                .currency(updatedAccount.getCurrency())
+                .updatedAt(updatedAccount.getUpdatedAt())
+                .build();
+        applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
@@ -96,6 +121,14 @@ public class AccountService {
         account.setIsActive(false);
         account.setStatus(AccountStatus.INACTIVE);
         Account updatedAccount = accountRepository.save(account);
+        AccountDeactivatedEvent event = new AccountDeactivatedEvent(
+                updatedAccount.getId(),
+                updatedAccount.getUserId(),
+                updatedAccount.getAccountNumber(),
+                "User requested deactivation",
+                updatedAccount.getUpdatedAt()
+        );
+        applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
@@ -107,6 +140,13 @@ public class AccountService {
         account.setIsActive(true);
         account.setStatus(AccountStatus.ACTIVE);
         Account updatedAccount = accountRepository.save(account);
+        AccountActivatedEvent event = new AccountActivatedEvent(
+                updatedAccount.getId(),
+                updatedAccount.getAccountNumber(),
+                updatedAccount.getUpdatedAt(),
+                updatedAccount.getUserId()
+        );
+        applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
@@ -118,6 +158,15 @@ public class AccountService {
         account.setStatus(AccountStatus.CLOSED);
         account.setIsActive(false);
         accountRepository.save(account);
+        AccountDeletedEvent event = new AccountDeletedEvent(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getUpdatedAt(),
+                account.getBalance(),
+                account.getUserId()
+        );
+        applicationEventPublisher.publishEvent(event);
+
     }
 
     private void validateAccountOwnership(Account account, Long currentUserId) {
@@ -134,12 +183,33 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
+        AccountDebitedEvent event = new AccountDebitedEvent(
+                account.getId(),
+                amount,
+                account.getCurrency(),
+                java.time.LocalDateTime.now(),
+                account.getBalance(),
+                account.getBalance().add(amount),
+                UUID.randomUUID().toString()
+        );
+        applicationEventPublisher.publishEvent(event);
+
     }
     @Transactional
     public void credit(Long accountId, BigDecimal amount){
         Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
+        AccountCreditedEvent event = new AccountCreditedEvent(
+                account.getId(),
+                amount,
+                java.time.LocalDateTime.now(),
+                account.getCurrency(),
+                account.getBalance(),
+                account.getBalance().subtract(amount),
+                UUID.randomUUID().toString()
+        );
+        applicationEventPublisher.publishEvent(event);
     }
     public boolean hasSufficientBalance(Long accountId, BigDecimal amount){
         Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));

@@ -6,6 +6,9 @@ import org.murat.orion.AuthDomain.Dto.Response.LoginResponse;
 import org.murat.orion.AuthDomain.Loginİnterface;
 import org.murat.orion.AuthDomain.Repository.UserRepository;
 import org.murat.orion.AuthDomain.Config.JwtService;
+import org.murat.orion.Notification.Events.Auth.EmailLoginEvent;
+import org.murat.orion.Notification.Events.Auth.LoginFailedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +20,40 @@ public class EmailLoginStrategy implements Loginİnterface<EmailLoginRequest> {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public LoginResponse login(EmailLoginRequest loginRequest) {
         var user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+                .orElseThrow(() -> {
+                    LoginFailedEvent failedEvent = LoginFailedEvent.builder()
+                            .email(loginRequest.getEmail())
+                            .reason("Kullanıcı bulunamadı")
+                            .failedAt(LocalDateTime.now())
+                            .build();
+                    applicationEventPublisher.publishEvent(failedEvent);
+                    return new RuntimeException("Kullanıcı bulunamadı");
+                });
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            LoginFailedEvent failedEvent = LoginFailedEvent.builder()
+                    .email(loginRequest.getEmail())
+                    .reason("Şifre yanlış")
+                    .failedAt(LocalDateTime.now())
+                    .build();
+            applicationEventPublisher.publishEvent(failedEvent);
             throw new RuntimeException("Şifre yanlış");
         }
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
+        EmailLoginEvent event = EmailLoginEvent.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .loginAt(LocalDateTime.now())
+                .build();
+        applicationEventPublisher.publishEvent(event);
 
         return LoginResponse.builder()
                 .accessToken(accessToken)

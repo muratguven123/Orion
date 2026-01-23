@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class İnternalTransferStrategy implements PaymentStrategy {
-    private final PaymentRepository transactionRepository;
+    private final PaymentRepository paymentRepository;
     private final AccountİntegrationService accountIntegrationService;
 
 
@@ -48,20 +48,20 @@ public class İnternalTransferStrategy implements PaymentStrategy {
                 .description(request.getDescription())
                 .createdAt(LocalDateTime.now())
                 .build();
-        transactionRepository.save(transaction);
+        paymentRepository.save(transaction);
 
         try {
 
             accountIntegrationService.debit(request.getSourceAccountId(), request.getAmount());
             accountIntegrationService.credit(request.getTargetAccountId(), request.getAmount());
             transaction.setStatus(PaymentTransactionStatus.SUCCESS);
-            transactionRepository.save(transaction);
+            paymentRepository.save(transaction);
             log.info("Transfer başarıyla tamamlandı. Ref: {}", refCode);
         } catch (Exception e) {
             log.error("Transfer sırasında hata oluştu: {}", e.getMessage());
             transaction.setStatus(PaymentTransactionStatus.FAILED);
             transaction.setFailureReason(e.getMessage());
-            transactionRepository.save(transaction);
+            paymentRepository.save(transaction);
             throw e;
         }
     }
