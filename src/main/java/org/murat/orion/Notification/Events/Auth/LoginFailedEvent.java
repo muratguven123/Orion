@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginFailedEvent {
+    private Long userId;
     private String email;
     private String phoneNumber;
     private String subject;
