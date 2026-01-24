@@ -78,8 +78,8 @@ public class PaymentService {
                 .type(PaymentTransactionType.DEPOSIT)
                 .build();
         paymentRepository.save(payment);
-        accountIntegrationService.credit(accountId, amount);
-        log.info("Deposited payment for account {}", accountId, amount);
+        accountIntegrationService.credit(accountId, amount, email, phoneNumber);
+        log.info("Deposited payment for account {} with amount {}", accountId, amount);
         DepositCompletedEvent event = new DepositCompletedEvent(
                 payment.getType(),
                 currency,
@@ -107,7 +107,7 @@ public class PaymentService {
 
         paymentRepository.save(transaction);
 
-        accountIntegrationService.debit(accountId, amount.doubleValue());
+        accountIntegrationService.debit(accountId, amount, email, phoneNumber);
 
         log.info("Para çekildi. Account: {}, Tutar: {}", accountId, amount);
         WithDrawComplicatedEvent event = new WithDrawComplicatedEvent(

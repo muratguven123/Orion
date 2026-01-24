@@ -31,7 +31,7 @@ public class AccountService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public AccountResponse createAccount(CreateAccountRequest request, Long userId) {
+    public AccountResponse createAccount(CreateAccountRequest request, Long userId, String email, String phoneNumber) {
         Account account = accountMapper.toEntity(request, userId);
         Account savedAccount = accountRepository.save(account);
         AccountCreatedEvent event = new AccountCreatedEvent(
@@ -42,7 +42,10 @@ public class AccountService {
                 savedAccount.getAccountType(),
                 savedAccount.getCurrency(),
                 savedAccount.getBalance(),
-                savedAccount.getCreatedAt()
+                savedAccount.getCreatedAt(),
+                email,
+                phoneNumber,
+                "Hesap Oluşturuldu"
         );
         applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(savedAccount);
@@ -85,7 +88,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponse updateAccount(Long accountId, UpdateAccountRequest request, Long currentUserId) {
+    public AccountResponse updateAccount(Long accountId, UpdateAccountRequest request, Long currentUserId, String email, String phoneNumber) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         validateAccountOwnership(account, currentUserId);
@@ -108,13 +111,16 @@ public class AccountService {
                 .accountType(updatedAccount.getAccountType())
                 .currency(updatedAccount.getCurrency())
                 .updatedAt(updatedAccount.getUpdatedAt())
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .subject("Hesap Güncellendi")
                 .build();
         applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
     @Transactional
-    public AccountResponse deactivateAccount(Long accountId, Long currentUserId) {
+    public AccountResponse deactivateAccount(Long accountId, Long currentUserId, String email, String phoneNumber) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         validateAccountOwnership(account, currentUserId);
@@ -126,14 +132,17 @@ public class AccountService {
                 updatedAccount.getUserId(),
                 updatedAccount.getAccountNumber(),
                 "User requested deactivation",
-                updatedAccount.getUpdatedAt()
+                updatedAccount.getUpdatedAt(),
+                email,
+                phoneNumber,
+                "Hesap Devre Dışı Bırakıldı"
         );
         applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
     @Transactional
-    public AccountResponse activateAccount(Long accountId, Long currentUserId) {
+    public AccountResponse activateAccount(Long accountId, Long currentUserId, String email, String phoneNumber) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         validateAccountOwnership(account, currentUserId);
@@ -144,14 +153,17 @@ public class AccountService {
                 updatedAccount.getId(),
                 updatedAccount.getAccountNumber(),
                 updatedAccount.getUpdatedAt(),
-                updatedAccount.getUserId()
+                updatedAccount.getUserId(),
+                email,
+                phoneNumber,
+                "Hesap Aktif Edildi"
         );
         applicationEventPublisher.publishEvent(event);
         return accountMapper.toResponse(updatedAccount);
     }
 
     @Transactional
-    public void deleteAccount(Long accountId, Long currentUserId) {
+    public void deleteAccount(Long accountId, Long currentUserId, String email, String phoneNumber) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         validateAccountOwnership(account, currentUserId);
@@ -163,7 +175,10 @@ public class AccountService {
                 account.getAccountNumber(),
                 account.getUpdatedAt(),
                 account.getBalance(),
-                account.getUserId()
+                account.getUserId(),
+                email,
+                phoneNumber,
+                "Hesap Silindi"
         );
         applicationEventPublisher.publishEvent(event);
 
@@ -175,7 +190,7 @@ public class AccountService {
         }
     }
     @Transactional
-    public void debit(Long accountId, BigDecimal amount){
+    public void debit(Long accountId, BigDecimal amount, String email, String phoneNumber){
         Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
 
         if(account.getBalance().compareTo(amount) < 0){
@@ -190,13 +205,16 @@ public class AccountService {
                 java.time.LocalDateTime.now(),
                 account.getBalance(),
                 account.getBalance().add(amount),
-                UUID.randomUUID().toString()
+                UUID.randomUUID().toString(),
+                email,
+                phoneNumber,
+                "Hesaptan Para Çekildi"
         );
         applicationEventPublisher.publishEvent(event);
 
     }
     @Transactional
-    public void credit(Long accountId, BigDecimal amount){
+    public void credit(Long accountId, BigDecimal amount, String email, String phoneNumber){
         Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
@@ -207,7 +225,10 @@ public class AccountService {
                 account.getCurrency(),
                 account.getBalance(),
                 account.getBalance().subtract(amount),
-                UUID.randomUUID().toString()
+                UUID.randomUUID().toString(),
+                email,
+                phoneNumber,
+                "Hesaba Para Yatırıldı"
         );
         applicationEventPublisher.publishEvent(event);
     }

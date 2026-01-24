@@ -52,8 +52,8 @@ public class İnternalTransferStrategy implements PaymentStrategy {
 
         try {
 
-            accountIntegrationService.debit(request.getSourceAccountId(), request.getAmount());
-            accountIntegrationService.credit(request.getTargetAccountId(), request.getAmount());
+            accountIntegrationService.debit(request.getSourceAccountId(), request.getAmount(), request.getEmail(), request.getPhoneNumber());
+            accountIntegrationService.credit(request.getTargetAccountId(), request.getAmount(), request.getEmail(), request.getPhoneNumber());
             transaction.setStatus(PaymentTransactionStatus.SUCCESS);
             paymentRepository.save(transaction);
             log.info("Transfer başarıyla tamamlandı. Ref: {}", refCode);

@@ -27,7 +27,7 @@ public class AccountController {
     public ResponseEntity<AccountResponse> createAccount(
             @AuthenticationPrincipal User currentUser,
             @Valid @RequestBody CreateAccountRequest request) {
-        AccountResponse response = accountService.createAccount(request, currentUser.getId());
+        AccountResponse response = accountService.createAccount(request, currentUser.getId(), currentUser.getEmail(), currentUser.getPhoneNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -69,7 +69,7 @@ public class AccountController {
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId,
             @Valid @RequestBody UpdateAccountRequest request) {
-        AccountResponse response = accountService.updateAccount(accountId, request, currentUser.getId());
+        AccountResponse response = accountService.updateAccount(accountId, request, currentUser.getId(), currentUser.getEmail(), currentUser.getPhoneNumber());
         return ResponseEntity.ok(response);
     }
 
@@ -78,7 +78,7 @@ public class AccountController {
     public ResponseEntity<AccountResponse> deactivateAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
-        AccountResponse response = accountService.deactivateAccount(accountId, currentUser.getId());
+        AccountResponse response = accountService.deactivateAccount(accountId, currentUser.getId(), currentUser.getEmail(), currentUser.getPhoneNumber());
         return ResponseEntity.ok(response);
     }
 
@@ -87,7 +87,7 @@ public class AccountController {
     public ResponseEntity<AccountResponse> activateAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
-        AccountResponse response = accountService.activateAccount(accountId, currentUser.getId());
+        AccountResponse response = accountService.activateAccount(accountId, currentUser.getId(), currentUser.getEmail(), currentUser.getPhoneNumber());
         return ResponseEntity.ok(response);
     }
 
@@ -96,7 +96,7 @@ public class AccountController {
     public ResponseEntity<Void> deleteAccount(
             @AuthenticationPrincipal User currentUser,
             @PathVariable Long accountId) {
-        accountService.deleteAccount(accountId, currentUser.getId());
+        accountService.deleteAccount(accountId, currentUser.getId(), currentUser.getEmail(), currentUser.getPhoneNumber());
         return ResponseEntity.noContent().build();
     }
 
