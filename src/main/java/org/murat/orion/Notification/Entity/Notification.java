@@ -1,12 +1,14 @@
 package org.murat.orion.Notification.Entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
 @Table(name = "notifications")
+@Builder
 public class Notification {
     @Id
     @GeneratedValue

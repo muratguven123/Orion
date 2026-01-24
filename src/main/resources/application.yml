@@ -1,8 +1,19 @@
 spring:
   application:
     name: Orion
-    jpa:
-      open-in-view: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:}
+    password: ${EMAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
   datasource:
     url: ${DB_URL}
@@ -13,8 +24,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
-      ddl-auto=create-drop:show-sql: true
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -30,5 +40,4 @@ jwt:
 logging:
   level:
     org.springframework.security: DEBUG
-
 
