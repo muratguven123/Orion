@@ -11,6 +11,7 @@ public class AccountDebitedEvent {
     private Long accountId;
     private String email;
     private String phoneNumber;
+    private String subject;
     private BigDecimal amount;
     private BigDecimal previousBalance;
     private BigDecimal newBalance;
@@ -18,7 +19,7 @@ public class AccountDebitedEvent {
     private String transactionReference;
     private LocalDateTime debitedAt;
 
-    public AccountDebitedEvent(Long accountId, BigDecimal amount, String currency, LocalDateTime debitedAt, BigDecimal newBalance, BigDecimal previousBalance, String transactionReference, String email, String phoneNumber) {
+    public AccountDebitedEvent(Long accountId, BigDecimal amount, String currency, LocalDateTime debitedAt, BigDecimal newBalance, BigDecimal previousBalance, String transactionReference, String email, String phoneNumber, String subject) {
         this.accountId = accountId;
         this.amount = amount;
         this.currency = currency;
@@ -28,5 +29,6 @@ public class AccountDebitedEvent {
         this.transactionReference = transactionReference;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.subject = subject;
     }
 }

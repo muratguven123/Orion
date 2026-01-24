@@ -10,14 +10,16 @@ public class DepositCompletedEvent {
     String currency;
     String email;
     String phoneNumber;
+    String subject;
     PaymentTransactionType paymentType;
 
-    public DepositCompletedEvent(PaymentTransactionType paymentType, String currency, double amount, long accountId, String email, String phoneNumber) {
+    public DepositCompletedEvent(PaymentTransactionType paymentType, String currency, double amount, long accountId, String email, String phoneNumber, String subject) {
         this.paymentType = paymentType;
         this.currency = currency;
         this.amount = amount;
         this.accountId = accountId;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.subject = subject;
     }
 }

@@ -9,12 +9,14 @@ public class WithDrawComplicatedEvent {
     String currency;
     String email;
     String phoneNumber;
+    String subject;
 
-    public WithDrawComplicatedEvent(String currency, double amount, long accountId, String email, String phoneNumber) {
+    public WithDrawComplicatedEvent(String currency, double amount, long accountId, String email, String phoneNumber, String subject) {
         this.currency = currency;
         this.amount = amount;
         this.accountId = accountId;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.subject = subject;
     }
 }

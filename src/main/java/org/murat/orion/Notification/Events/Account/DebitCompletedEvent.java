@@ -11,4 +11,5 @@ public class DebitCompletedEvent {
     BigDecimal amount;
     String email;
     String phoneNumber;
+    String subject;
 }

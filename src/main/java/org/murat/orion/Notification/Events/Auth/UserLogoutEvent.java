@@ -15,5 +15,6 @@ public class UserLogoutEvent {
     private Long userId;
     private String email;
     private String phoneNumber;
+    private String subject;
     private LocalDateTime logoutAt;
 }

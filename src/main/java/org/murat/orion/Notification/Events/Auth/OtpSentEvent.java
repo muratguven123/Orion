@@ -15,6 +15,7 @@ public class OtpSentEvent {
     private Long userId;
     private String phoneNumber;
     private String email;
+    private String subject;
     private String otpType;
     private LocalDateTime sentAt;
     private LocalDateTime expiresAt;

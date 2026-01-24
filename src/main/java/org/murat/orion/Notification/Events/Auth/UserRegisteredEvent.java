@@ -15,6 +15,7 @@ public class UserRegisteredEvent {
     private Long userId;
     private String email;
     private String phoneNumber;
+    private String subject;
     private String firstName;
     private String lastName;
     private LocalDateTime registeredAt;

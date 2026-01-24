@@ -15,6 +15,7 @@ public class OtpVerifiedEvent {
     private Long userId;
     private String phoneNumber;
     private String email;
+    private String subject;
     private String otpType;
     private LocalDateTime verifiedAt;
 }

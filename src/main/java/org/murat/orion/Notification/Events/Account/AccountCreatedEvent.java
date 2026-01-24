@@ -15,12 +15,13 @@ public class AccountCreatedEvent {
     private String accountName;
     private String email;
     private String phoneNumber;
+    private String subject;
     private AccountType accountType;
     private String currency;
     private BigDecimal initialBalance;
     private LocalDateTime createdAt;
 
-    public AccountCreatedEvent(Long id, Long userId, String accountNumber, String accountName, AccountType accountType, String currency, BigDecimal balance, LocalDateTime createdAt, String email, String phoneNumber) {
+    public AccountCreatedEvent(Long id, Long userId, String accountNumber, String accountName, AccountType accountType, String currency, BigDecimal balance, LocalDateTime createdAt, String email, String phoneNumber, String subject) {
         this.accountId = id;
         this.userId = userId;
         this.accountNumber = accountNumber;
@@ -31,5 +32,6 @@ public class AccountCreatedEvent {
         this.createdAt = createdAt;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.subject = subject;
     }
 }

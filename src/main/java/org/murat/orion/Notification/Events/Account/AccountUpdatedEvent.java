@@ -15,6 +15,7 @@ public class AccountUpdatedEvent {
     private String accountName;
     private String email;
     private String phoneNumber;
+    private String subject;
     private AccountType accountType;
     private String currency;
     private LocalDateTime updatedAt;

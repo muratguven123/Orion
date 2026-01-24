@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class LoginFailedEvent {
     private String email;
     private String phoneNumber;
+    private String subject;
     private String ipAddress;
     private String reason;
     private LocalDateTime failedAt;

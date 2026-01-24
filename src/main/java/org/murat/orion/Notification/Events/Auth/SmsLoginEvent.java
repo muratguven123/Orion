@@ -15,6 +15,7 @@ public class SmsLoginEvent {
     private Long userId;
     private String email;
     private String phoneNumber;
+    private String subject;
     private String ipAddress;
     private String deviceInfo;
     private LocalDateTime loginAt;

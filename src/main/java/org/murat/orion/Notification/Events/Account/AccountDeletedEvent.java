@@ -13,10 +13,11 @@ public class AccountDeletedEvent {
     private String accountNumber;
     private String email;
     private String phoneNumber;
+    private String subject;
     private BigDecimal finalBalance;
     private LocalDateTime deletedAt;
 
-    public AccountDeletedEvent(Long accountId, String accountNumber, LocalDateTime deletedAt, BigDecimal finalBalance, Long userId, String email, String phoneNumber) {
+    public AccountDeletedEvent(Long accountId, String accountNumber, LocalDateTime deletedAt, BigDecimal finalBalance, Long userId, String email, String phoneNumber, String subject) {
         this.accountId = accountId;
         this.accountNumber = accountNumber;
         this.deletedAt = deletedAt;
@@ -24,5 +25,6 @@ public class AccountDeletedEvent {
         this.userId = userId;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.subject = subject;
     }
 }
