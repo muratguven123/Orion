@@ -89,8 +89,10 @@ class PaymentServiceTest {
         Long accountId = 1L;
         Double amount = 500.0;
         String currency = "TRY";
+        String email = "test@test.com";
+        String phoneNumber = "+905551234567";
 
-        paymentService.deposit(accountId, amount, currency);
+        paymentService.deposit(accountId, amount, currency, email, phoneNumber);
 
         ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
         verify(paymentRepository, times(1)).save(paymentCaptor.capture());
@@ -101,7 +103,7 @@ class PaymentServiceTest {
         assertEquals(currency, savedPayment.getCurrency());
         assertEquals(PaymentTransactionType.DEPOSIT, savedPayment.getType());
 
-        verify(accountIntegrationService, times(1)).credit(accountId, amount);
+        verify(accountIntegrationService, times(1)).credit(accountId, amount, email, phoneNumber);
     }
 
     @Test
@@ -110,8 +112,10 @@ class PaymentServiceTest {
         Long accountId = 1L;
         Double amount = 200.0;
         String currency = "TRY";
+        String email = "test@test.com";
+        String phoneNumber = "+905551234567";
 
-        paymentService.withdraw(accountId, amount, currency);
+        paymentService.withdraw(accountId, amount, currency, email, phoneNumber);
 
         ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
         verify(paymentRepository, times(1)).save(paymentCaptor.capture());
@@ -123,7 +127,7 @@ class PaymentServiceTest {
         assertEquals(PaymentTransactionType.WITHDRAW, savedPayment.getType());
         assertEquals(PaymentTransactionStatus.SUCCESS, savedPayment.getStatus());
 
-        verify(accountIntegrationService, times(1)).debit(accountId, amount);
+        verify(accountIntegrationService, times(1)).debit(accountId, amount, email, phoneNumber);
     }
 
     @Test
@@ -191,11 +195,13 @@ class PaymentServiceTest {
         Long accountId = 1L;
         Double amount = 0.0;
         String currency = "TRY";
+        String email = "test@test.com";
+        String phoneNumber = "+905551234567";
 
-        paymentService.deposit(accountId, amount, currency);
+        paymentService.deposit(accountId, amount, currency, email, phoneNumber);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
-        verify(accountIntegrationService, times(1)).credit(accountId, amount);
+        verify(accountIntegrationService, times(1)).credit(accountId, amount, email, phoneNumber);
     }
 
     @Test
@@ -204,8 +210,10 @@ class PaymentServiceTest {
         Long accountId = 1L;
         Double amount = 100.0;
         String currency = "USD";
+        String email = "test@test.com";
+        String phoneNumber = "+905551234567";
 
-        paymentService.withdraw(accountId, amount, currency);
+        paymentService.withdraw(accountId, amount, currency, email, phoneNumber);
 
         ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
         verify(paymentRepository, times(1)).save(paymentCaptor.capture());

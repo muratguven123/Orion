@@ -76,6 +76,8 @@ class PaymentControllerTest {
         request.setAccountId(1L);
         request.setAmount(500.0);
         request.setCurrency("TRY");
+        request.setEmail("test@test.com");
+        request.setPhoneNumber("+905551234567");
 
         mockMvc.perform(post("/api/payments/deposit")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +85,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Para yatırma işlemi başarılı."));
 
-        verify(paymentService, times(1)).deposit(1L, 500.0, "TRY");
+        verify(paymentService, times(1)).deposit(1L, 500.0, "TRY", "test@test.com", "+905551234567");
     }
 
     @Test
@@ -93,6 +95,8 @@ class PaymentControllerTest {
         request.setAccountId(1L);
         request.setAmount(200.0);
         request.setCurrency("TRY");
+        request.setEmail("test@test.com");
+        request.setPhoneNumber("+905551234567");
 
         mockMvc.perform(post("/api/payments/withdraw")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +104,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Para çekme işlemi başarılı."));
 
-        verify(paymentService, times(1)).withdraw(1L, 200.0, "TRY");
+        verify(paymentService, times(1)).withdraw(1L, 200.0, "TRY", "test@test.com", "+905551234567");
     }
 
     @Test
@@ -148,13 +152,15 @@ class PaymentControllerTest {
         request.setAccountId(1L);
         request.setAmount(100.0);
         request.setCurrency("USD");
+        request.setEmail("test@test.com");
+        request.setPhoneNumber("+905551234567");
 
         mockMvc.perform(post("/api/payments/deposit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(paymentService, times(1)).deposit(1L, 100.0, "USD");
+        verify(paymentService, times(1)).deposit(1L, 100.0, "USD", "test@test.com", "+905551234567");
     }
 
     @Test
@@ -164,13 +170,15 @@ class PaymentControllerTest {
         request.setAccountId(1L);
         request.setAmount(1000000.0);
         request.setCurrency("TRY");
+        request.setEmail("test@test.com");
+        request.setPhoneNumber("+905551234567");
 
         mockMvc.perform(post("/api/payments/withdraw")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(paymentService, times(1)).withdraw(1L, 1000000.0, "TRY");
+        verify(paymentService, times(1)).withdraw(1L, 1000000.0, "TRY", "test@test.com", "+905551234567");
     }
 
     @Test

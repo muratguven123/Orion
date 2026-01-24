@@ -66,6 +66,7 @@ class AccountControllerTest {
         testUser = User.builder()
                 .id(USER_ID)
                 .email("test@test.com")
+                .phoneNumber("+905551234567")
                 .firstName("Test")
                 .lastName("User")
                 .role(Role.USER)
@@ -110,7 +111,7 @@ class AccountControllerTest {
         @Test
         @DisplayName("Should create account and return 201")
         void shouldCreateAccountAndReturn201() throws Exception {
-            when(accountService.createAccount(any(CreateAccountRequest.class), eq(USER_ID)))
+            when(accountService.createAccount(any(CreateAccountRequest.class), eq(USER_ID), eq("test@test.com"), eq("+905551234567")))
                     .thenReturn(testAccountResponse);
 
             mockMvc.perform(post("/api/accounts")
@@ -193,7 +194,7 @@ class AccountControllerTest {
         @Test
         @DisplayName("Should update account and return 200")
         void shouldUpdateAccountAndReturn200() throws Exception {
-            when(accountService.updateAccount(eq(ACCOUNT_ID), any(UpdateAccountRequest.class), eq(USER_ID)))
+            when(accountService.updateAccount(eq(ACCOUNT_ID), any(UpdateAccountRequest.class), eq(USER_ID), eq("test@test.com"), eq("+905551234567")))
                     .thenReturn(testAccountResponse);
 
             mockMvc.perform(put("/api/accounts/{accountId}", ACCOUNT_ID)
@@ -220,7 +221,7 @@ class AccountControllerTest {
                     .isActive(false)
                     .build();
 
-            when(accountService.deactivateAccount(eq(ACCOUNT_ID), eq(USER_ID)))
+            when(accountService.deactivateAccount(eq(ACCOUNT_ID), eq(USER_ID), eq("test@test.com"), eq("+905551234567")))
                     .thenReturn(deactivatedResponse);
 
             mockMvc.perform(patch("/api/accounts/{accountId}/deactivate", ACCOUNT_ID)
@@ -236,7 +237,7 @@ class AccountControllerTest {
         @Test
         @DisplayName("Should activate account and return 200")
         void shouldActivateAccountAndReturn200() throws Exception {
-            when(accountService.activateAccount(eq(ACCOUNT_ID), eq(USER_ID)))
+            when(accountService.activateAccount(eq(ACCOUNT_ID), eq(USER_ID), eq("test@test.com"), eq("+905551234567")))
                     .thenReturn(testAccountResponse);
 
             mockMvc.perform(patch("/api/accounts/{accountId}/activate", ACCOUNT_ID)
@@ -252,7 +253,7 @@ class AccountControllerTest {
         @Test
         @DisplayName("Should delete account and return 204")
         void shouldDeleteAccountAndReturn204() throws Exception {
-            doNothing().when(accountService).deleteAccount(eq(ACCOUNT_ID), eq(USER_ID));
+            doNothing().when(accountService).deleteAccount(eq(ACCOUNT_ID), eq(USER_ID), eq("test@test.com"), eq("+905551234567"));
 
             mockMvc.perform(delete("/api/accounts/{accountId}", ACCOUNT_ID)
                             .principal(() -> testUser.getEmail()))

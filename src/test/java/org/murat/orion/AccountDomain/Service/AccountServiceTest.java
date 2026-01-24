@@ -51,6 +51,8 @@ class AccountServiceTest {
     private static final Long USER_ID = 1L;
     private static final Long ACCOUNT_ID = 100L;
     private static final String ACCOUNT_NUMBER = "ACC123456789012";
+    private static final String EMAIL = "test@test.com";
+    private static final String PHONE_NUMBER = "+905551234567";
 
     @BeforeEach
     void setUp() {
@@ -105,7 +107,7 @@ class AccountServiceTest {
             when(accountRepository.save(testAccount)).thenReturn(testAccount);
             when(accountMapper.toResponse(testAccount)).thenReturn(testAccountResponse);
 
-            AccountResponse response = accountService.createAccount(createAccountRequest, USER_ID);
+            AccountResponse response = accountService.createAccount(createAccountRequest, USER_ID, EMAIL, PHONE_NUMBER);
 
             assertThat(response).isNotNull();
             assertThat(response.getAccountName()).isEqualTo("Test Account");
@@ -241,7 +243,7 @@ class AccountServiceTest {
             when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
             when(accountMapper.toResponse(any(Account.class))).thenReturn(testAccountResponse);
 
-            AccountResponse response = accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, USER_ID);
+            AccountResponse response = accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, USER_ID, EMAIL, PHONE_NUMBER);
 
             assertThat(response).isNotNull();
             verify(accountRepository, times(1)).save(any(Account.class));
@@ -252,7 +254,7 @@ class AccountServiceTest {
         void shouldThrowExceptionWhenUpdatingNonExistentAccount() {
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, USER_ID))
+            assertThatThrownBy(() -> accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, USER_ID, EMAIL, PHONE_NUMBER))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Account not found");
         }
@@ -263,7 +265,7 @@ class AccountServiceTest {
             Long differentUserId = 999L;
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(testAccount));
 
-            assertThatThrownBy(() -> accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, differentUserId))
+            assertThatThrownBy(() -> accountService.updateAccount(ACCOUNT_ID, updateAccountRequest, differentUserId, EMAIL, PHONE_NUMBER))
                     .isInstanceOf(AccessDeniedException.class);
         }
 
@@ -278,7 +280,7 @@ class AccountServiceTest {
             when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
             when(accountMapper.toResponse(any(Account.class))).thenReturn(testAccountResponse);
 
-            accountService.updateAccount(ACCOUNT_ID, partialUpdate, USER_ID);
+            accountService.updateAccount(ACCOUNT_ID, partialUpdate, USER_ID, EMAIL, PHONE_NUMBER);
 
             verify(accountRepository).save(argThat(account ->
                 account.getAccountName().equals("New Name Only")
@@ -297,7 +299,7 @@ class AccountServiceTest {
             when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
             when(accountMapper.toResponse(any(Account.class))).thenReturn(testAccountResponse);
 
-            AccountResponse response = accountService.deactivateAccount(ACCOUNT_ID, USER_ID);
+            AccountResponse response = accountService.deactivateAccount(ACCOUNT_ID, USER_ID, EMAIL, PHONE_NUMBER);
 
             assertThat(response).isNotNull();
             verify(accountRepository).save(argThat(account ->
@@ -311,7 +313,7 @@ class AccountServiceTest {
             Long differentUserId = 999L;
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(testAccount));
 
-            assertThatThrownBy(() -> accountService.deactivateAccount(ACCOUNT_ID, differentUserId))
+            assertThatThrownBy(() -> accountService.deactivateAccount(ACCOUNT_ID, differentUserId, EMAIL, PHONE_NUMBER))
                     .isInstanceOf(AccessDeniedException.class);
         }
     }
@@ -330,7 +332,7 @@ class AccountServiceTest {
             when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
             when(accountMapper.toResponse(any(Account.class))).thenReturn(testAccountResponse);
 
-            AccountResponse response = accountService.activateAccount(ACCOUNT_ID, USER_ID);
+            AccountResponse response = accountService.activateAccount(ACCOUNT_ID, USER_ID, EMAIL, PHONE_NUMBER);
 
             assertThat(response).isNotNull();
             verify(accountRepository).save(argThat(account ->
@@ -349,7 +351,7 @@ class AccountServiceTest {
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(testAccount));
             when(accountRepository.save(any(Account.class))).thenReturn(testAccount);
 
-            accountService.deleteAccount(ACCOUNT_ID, USER_ID);
+            accountService.deleteAccount(ACCOUNT_ID, USER_ID, EMAIL, PHONE_NUMBER);
 
             verify(accountRepository).save(argThat(account ->
                 !account.getIsActive() && account.getStatus() == AccountStatus.CLOSED
@@ -361,7 +363,7 @@ class AccountServiceTest {
         void shouldThrowExceptionWhenDeletingNonExistentAccount() {
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> accountService.deleteAccount(ACCOUNT_ID, USER_ID))
+            assertThatThrownBy(() -> accountService.deleteAccount(ACCOUNT_ID, USER_ID, EMAIL, PHONE_NUMBER))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Account not found");
         }
@@ -372,7 +374,7 @@ class AccountServiceTest {
             Long differentUserId = 999L;
             when(accountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(testAccount));
 
-            assertThatThrownBy(() -> accountService.deleteAccount(ACCOUNT_ID, differentUserId))
+            assertThatThrownBy(() -> accountService.deleteAccount(ACCOUNT_ID, differentUserId, EMAIL, PHONE_NUMBER))
                     .isInstanceOf(AccessDeniedException.class);
         }
     }
