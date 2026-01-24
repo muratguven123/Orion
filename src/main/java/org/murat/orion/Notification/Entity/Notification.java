@@ -1,5 +1,6 @@
 package org.murat.orion.Notification.Entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
+@Schema(name = "notification")
 @Getter
 @Setter
 @Builder

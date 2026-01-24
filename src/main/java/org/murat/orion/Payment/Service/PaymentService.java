@@ -76,6 +76,9 @@ public class PaymentService {
                 .amount(BigDecimal.valueOf(amount))
                 .currency(currency)
                 .type(PaymentTransactionType.DEPOSIT)
+                .status(PaymentTransactionStatus.SUCCESS)
+                .referenceCode(UUID.randomUUID().toString())
+                .description("Para Yatırma İşlemi")
                 .build();
         paymentRepository.save(payment);
         accountIntegrationService.credit(accountId, amount, email, phoneNumber);

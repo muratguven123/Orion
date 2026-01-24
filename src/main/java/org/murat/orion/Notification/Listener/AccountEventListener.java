@@ -81,16 +81,4 @@ public class AccountEventListener {
         notificationService.sendEmail(event.getAccountId(), event.getEmail(), event.getSubject(), message);
         notificationService.sendSms(event.getAccountId(), event.getPhoneNumber(), message);
     }
-    @Async
-    @EventListener
-    public void onDebited(AccountDebitedEvent event) {
-        log.info("Hesap borçlandırma etkinliği alındı: {}", event);
-        String message = String.format("Sayın %s, hesabınızdan %s %s tutarında bir borçlandırma yapıldı. Yeni bakiyeniz: %s %s",
-                event.getAccountId(), event.getAmount(), event.getCurrency(), event.getNewBalance(), event.getCurrency());
-        notificationService.sendEmail(event.getAccountId(), event.getEmail(), event.getSubject(), message);
-        notificationService.sendSms(event.getAccountId(), event.getPhoneNumber(), message);
-    }
-
-
-
 }
