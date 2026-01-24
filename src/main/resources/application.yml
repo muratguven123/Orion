@@ -14,7 +14,6 @@ spring:
           starttls:
             enable: true
 
-
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -28,6 +27,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:}
+    username: ${TELEGRAM_BOT_USERNAME:}
 
 server:
   port: 8080
