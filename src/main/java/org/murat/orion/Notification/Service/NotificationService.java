@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class NotificationService {
     private final notificationRepository notificationRepository;
     private final JavaMailSender mailSender;
     private final SmsNotificationService smsNotificationService;
-
+    private final NotificationLogService notificationLogService;
     @Value("${spring.mail.username:}")
     private String fromEmail;
 
@@ -29,48 +30,36 @@ public class NotificationService {
     public NotificationService(
             notificationRepository notificationRepository,
             @Autowired(required = false) JavaMailSender mailSender,
-            SmsNotificationService smsNotificationService) {
+            SmsNotificationService smsNotificationService, NotificationLogService notificationLogService) {
         this.notificationRepository = notificationRepository;
         this.mailSender = mailSender;
         this.smsNotificationService = smsNotificationService;
+        this.notificationLogService = notificationLogService;
     }
 
     @Async
     public void sendEmail(Long userId, String email, String subject, String content) {
-        if (mailSender == null) {
-            log.warn("Mail servisi yapılandırılmamış. Mail gönderilemedi: {}", email);
-        }
+        boolean isSent = false;
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(email);
-            message.setSubject(subject);
-            message.setText(content);
 
-
-            mailSender.send(message);
-            log.info("Mail Gönderildi kime {}", email);
-
+            if (mailSender != null) {;
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setFrom(fromEmail);
+                message.setTo(email);
+                message.setSubject(subject);
+                message.setText(content);
+                mailSender.send(message);
+                isSent = true;
+                log.info("Mail Gönderildi kime {}", email);
+                ((JavaMailSenderImpl) mailSender).getJavaMailProperties().put("mail.debug", "true");
+            }
         } catch (Exception e) {
-            log.error("Mail Gönderimi Sırasında Hata Meydana Geldi: {}", e.getMessage());
-        }
-        try{
-            saveLogforEmail(userId, email, subject, content);
-        }catch (Exception e){
-            log.error("Mail Log Kaydı Sırasında Hata Meydana Geldi: {}", e.getMessage());
+            log.error("E-posta gönderilirken hata oluştu: {}", e.getMessage());
+        }finally {
+            notificationLogService.saveLog(userId, email, subject, content, NotificationType.EMAIL, isSent);
         }
     }
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void saveLogforEmail(Long userId, String email, String subject, String content) {
-        Notification history = Notification.builder()
-                .userId(userId)
-                .email(email)
-                .subject(subject)
-                .messageBody(content)
-                .type(NotificationType.EMAIL)
-                .build();
-        notificationRepository.save(history);
-    }
+
     @Async
     public void sendSms(Long userıd, String phoneNumber, String message) {
         smsNotificationService.sendSms(userıd, phoneNumber, message);
