@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MockSmsStrategy implements smsProvider {
+public class MockSmsService implements smsProvider {
     @Override
     public void sendSms(String phoneNumber, String message) {
-        log.info("🧪 [MOCK SMS] Gerçek SMS gönderimi simüle ediliyor...");
-        log.info("📱 Alıcı: {} | Mesaj: {}", phoneNumber, message);
+        log.info(" [MOCK SMS] Gerçek SMS gönderimi simüle ediliyor...");
+        log.info(" Alıcı: {} | Mesaj: {}", phoneNumber, message);
     }
     public boolean supports(String provider) {
         return "MOCK".equalsIgnoreCase(provider);

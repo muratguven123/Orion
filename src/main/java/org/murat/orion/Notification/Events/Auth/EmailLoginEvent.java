@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class EmailLoginEvent {
     private Long userId;
     private String email;
+    private String phoneNumber;
     private String ipAddress;
     private String deviceInfo;
     private LocalDateTime loginAt;

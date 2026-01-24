@@ -15,5 +15,6 @@ public class UserLoginEvent {
     private String deviceInfo;
     private String ipAddress;
     private String email;
+    private String phoneNumber;
     private Long userId;
 }

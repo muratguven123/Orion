@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SmsLoginEvent {
     private Long userId;
+    private String email;
     private String phoneNumber;
     private String ipAddress;
     private String deviceInfo;

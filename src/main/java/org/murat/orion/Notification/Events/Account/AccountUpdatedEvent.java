@@ -13,6 +13,8 @@ public class AccountUpdatedEvent {
     private Long accountId;
     private Long userId;
     private String accountName;
+    private String email;
+    private String phoneNumber;
     private AccountType accountType;
     private String currency;
     private LocalDateTime updatedAt;

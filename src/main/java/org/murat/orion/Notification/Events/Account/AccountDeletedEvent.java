@@ -11,14 +11,18 @@ public class AccountDeletedEvent {
     private Long accountId;
     private Long userId;
     private String accountNumber;
+    private String email;
+    private String phoneNumber;
     private BigDecimal finalBalance;
     private LocalDateTime deletedAt;
 
-    public AccountDeletedEvent(Long accountId, String accountNumber, LocalDateTime deletedAt, BigDecimal finalBalance, Long userId) {
+    public AccountDeletedEvent(Long accountId, String accountNumber, LocalDateTime deletedAt, BigDecimal finalBalance, Long userId, String email, String phoneNumber) {
         this.accountId = accountId;
         this.accountNumber = accountNumber;
         this.deletedAt = deletedAt;
         this.finalBalance = finalBalance;
         this.userId = userId;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }

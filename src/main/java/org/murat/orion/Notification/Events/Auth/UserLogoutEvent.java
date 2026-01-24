@@ -14,5 +14,6 @@ import java.time.LocalDateTime;
 public class UserLogoutEvent {
     private Long userId;
     private String email;
+    private String phoneNumber;
     private LocalDateTime logoutAt;
 }

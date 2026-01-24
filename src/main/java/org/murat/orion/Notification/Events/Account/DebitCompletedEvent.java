@@ -9,4 +9,6 @@ import java.math.BigDecimal;
 public class DebitCompletedEvent {
     Long accountId;
     BigDecimal amount;
+    String email;
+    String phoneNumber;
 }

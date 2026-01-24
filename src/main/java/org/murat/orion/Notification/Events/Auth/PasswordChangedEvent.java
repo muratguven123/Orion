@@ -14,5 +14,6 @@ import java.time.LocalDateTime;
 public class PasswordChangedEvent {
     private Long userId;
     private String email;
+    private String phoneNumber;
     private LocalDateTime changedAt;
 }

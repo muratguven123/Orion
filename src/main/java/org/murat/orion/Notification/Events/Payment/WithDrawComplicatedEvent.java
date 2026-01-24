@@ -7,9 +7,14 @@ public class WithDrawComplicatedEvent {
     long accountId;
     double amount;
     String currency;
-    public WithDrawComplicatedEvent( String currency, double amount, long accountId) {
+    String email;
+    String phoneNumber;
+
+    public WithDrawComplicatedEvent(String currency, double amount, long accountId, String email, String phoneNumber) {
         this.currency = currency;
         this.amount = amount;
         this.accountId = accountId;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }

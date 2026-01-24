@@ -37,6 +37,7 @@ public class NotificationService {
             log.error("Mail Gönderimi Sırasında Hata Meydana Geldi :" + e.getMessage());
         }
     }
+
     private void saveLogforEmail(Long userId, String email, String subject, String content) {
         Notification history = Notification.builder()
                 .userId(userId)
@@ -48,6 +49,7 @@ public class NotificationService {
 
         notificationRepository.save(history);
     }
+    @Async
     public void sendSms(Long userıd, String phoneNumber, String message) {
         smsNotificationService.sendSms(userıd, phoneNumber, message);
     }

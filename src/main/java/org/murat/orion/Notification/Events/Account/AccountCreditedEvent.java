@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AccountCreditedEvent {
     private Long accountId;
+    private String email;
+    private String phoneNumber;
     private BigDecimal amount;
     private BigDecimal previousBalance;
     private BigDecimal newBalance;
@@ -16,7 +18,7 @@ public class AccountCreditedEvent {
     private String transactionReference;
     private LocalDateTime creditedAt;
 
-    public AccountCreditedEvent(Long accountId, BigDecimal amount, LocalDateTime creditedAt, String currency, BigDecimal newBalance, BigDecimal previousBalance, String transactionReference) {
+    public AccountCreditedEvent(Long accountId, BigDecimal amount, LocalDateTime creditedAt, String currency, BigDecimal newBalance, BigDecimal previousBalance, String transactionReference, String email, String phoneNumber) {
         this.accountId = accountId;
         this.amount = amount;
         this.creditedAt = creditedAt;
@@ -24,5 +26,7 @@ public class AccountCreditedEvent {
         this.newBalance = newBalance;
         this.previousBalance = previousBalance;
         this.transactionReference = transactionReference;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }

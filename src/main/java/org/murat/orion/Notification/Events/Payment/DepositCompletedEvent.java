@@ -8,11 +8,16 @@ public class DepositCompletedEvent {
     long accountId;
     double amount;
     String currency;
+    String email;
+    String phoneNumber;
     PaymentTransactionType paymentType;
-    public DepositCompletedEvent(PaymentTransactionType paymentType, String currency, double amount, long accountId) {
+
+    public DepositCompletedEvent(PaymentTransactionType paymentType, String currency, double amount, long accountId, String email, String phoneNumber) {
         this.paymentType = paymentType;
         this.currency = currency;
         this.amount = amount;
         this.accountId = accountId;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }
