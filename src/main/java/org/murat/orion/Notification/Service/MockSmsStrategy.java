@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 public class MockSmsStrategy implements smsProvider {
     @Override
     public void sendSms(String phoneNumber, String message) {
-
+        log.info("🧪 [MOCK SMS] Gerçek SMS gönderimi simüle ediliyor...");
+        log.info("📱 Alıcı: {} | Mesaj: {}", phoneNumber, message);
+    }
+    public boolean supports(String provider) {
+        return "MOCK".equalsIgnoreCase(provider);
     }
 }

@@ -1,5 +1,6 @@
 package org.murat.orion.Notification.Service;
 
+import org.murat.orion.Notification.İnterface.smsProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -8,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-public class TelegramBootService extends TelegramLongPollingBot {
+public class TelegramBootService extends TelegramLongPollingBot implements smsProvider {
 
     private final String botUsername;
 
@@ -27,7 +28,8 @@ public class TelegramBootService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
     }
 
-    public void sendMessage(String chatId, String text) {
+    @Override
+    public void sendSms(String chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
@@ -36,5 +38,10 @@ public class TelegramBootService extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean supports(String provider) {
+        return "TELEGRAM".equalsIgnoreCase(provider);
     }
 }
