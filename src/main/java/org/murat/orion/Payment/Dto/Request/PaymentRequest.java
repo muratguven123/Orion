@@ -16,5 +16,7 @@ public class PaymentRequest {
     private Double amount;
     private String currency;
     private String description;
+    private String email;
+    private String phoneNumber;
     private PaymentTransactionType paymentType;
 }

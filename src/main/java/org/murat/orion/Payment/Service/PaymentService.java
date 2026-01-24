@@ -28,8 +28,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static jakarta.persistence.GenerationType.UUID;
-
 @Service
 @Slf4j
 @EnableAsync
@@ -57,13 +55,22 @@ public class PaymentService {
             throw new IllegalArgumentException("Unsupported payment type: " + paymentRequest.getPaymentType());
         }
         paymentStrategy.processPayment(paymentRequest);
-        ProcessCompletedEvent event = new ProcessCompletedEvent(paymentRequest.getPaymentType(),paymentRequest.getCurrency(),paymentRequest.getAmount(),
-                paymentRequest.getSourceAccountId(),paymentRequest.getTargetAccountId(),paymentRequest.getDescription());
+        ProcessCompletedEvent event = new ProcessCompletedEvent(
+                paymentRequest.getPaymentType(),
+                paymentRequest.getCurrency(),
+                paymentRequest.getAmount(),
+                paymentRequest.getSourceAccountId(),
+                paymentRequest.getTargetAccountId(),
+                paymentRequest.getDescription(),
+                paymentRequest.getEmail(),
+                paymentRequest.getPhoneNumber(),
+                "Ödeme İşlemi Tamamlandı"
+        );
         applicationEventPublisher.publishEvent(event);
 
     }
     @Transactional
-    public void deposit(long accountId, Double amount,String currency) {
+    public void deposit(long accountId, Double amount, String currency, String email, String phoneNumber) {
         Payment payment =Payment.builder()
                 .targetAccountId(accountId)
                 .amount(BigDecimal.valueOf(amount))
@@ -72,12 +79,20 @@ public class PaymentService {
                 .build();
         paymentRepository.save(payment);
         accountIntegrationService.credit(accountId, amount);
-        log.info("Deposited payment for account {}", accountId,amount);
-        DepositCompletedEvent event = new DepositCompletedEvent(payment.getType(),currency,amount,accountId);
+        log.info("Deposited payment for account {}", accountId, amount);
+        DepositCompletedEvent event = new DepositCompletedEvent(
+                payment.getType(),
+                currency,
+                amount,
+                accountId,
+                email,
+                phoneNumber,
+                "Para Yatırma İşlemi Tamamlandı"
+        );
         applicationEventPublisher.publishEvent(event);
     }
     @Transactional
-    public void withdraw(Long accountId, Double amount, String currency) {
+    public void withdraw(Long accountId, Double amount, String currency, String email, String phoneNumber) {
 
         Payment transaction = Payment.builder()
                 .sourceAccountId(accountId)
@@ -85,7 +100,7 @@ public class PaymentService {
                 .currency(currency)
                 .type(PaymentTransactionType.WITHDRAW)
                 .status(PaymentTransactionStatus.SUCCESS)
-                .referenceCode(UUID.toString())
+                .referenceCode(java.util.UUID.randomUUID().toString())
                 .createdAt(LocalDateTime.now())
                 .description("ATM Para Çekme")
                 .build();
@@ -95,7 +110,14 @@ public class PaymentService {
         accountIntegrationService.debit(accountId, amount.doubleValue());
 
         log.info("Para çekildi. Account: {}, Tutar: {}", accountId, amount);
-        WithDrawComplicatedEvent event = new WithDrawComplicatedEvent(currency,amount,accountId);
+        WithDrawComplicatedEvent event = new WithDrawComplicatedEvent(
+                currency,
+                amount,
+                accountId,
+                email,
+                phoneNumber,
+                "Para Çekme İşlemi Tamamlandı"
+        );
         applicationEventPublisher.publishEvent(event);
     }
     public Page<PaymentTransferRequest> getAccountHistory(UUID accountId, Pageable pageable) {

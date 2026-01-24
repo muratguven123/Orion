@@ -9,4 +9,6 @@ public class BalanceOperationRequest {
     private Long accountId;
     private Double amount;
     private String currency;
+    private String email;
+    private String phoneNumber;
 }

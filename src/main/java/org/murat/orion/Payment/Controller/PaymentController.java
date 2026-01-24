@@ -30,13 +30,13 @@ public class PaymentController {
 
     @PostMapping("/deposit")
     public ResponseEntity<String> deposit(@RequestBody BalanceOperationRequest request) {
-        paymentService.deposit(request.getAccountId(), request.getAmount(), request.getCurrency());
+        paymentService.deposit(request.getAccountId(), request.getAmount(), request.getCurrency(), request.getEmail(), request.getPhoneNumber());
         return ResponseEntity.ok("Para yatırma işlemi başarılı.");
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<String> withdraw(@RequestBody BalanceOperationRequest request) {
-        paymentService.withdraw(request.getAccountId(), request.getAmount(), request.getCurrency());
+        paymentService.withdraw(request.getAccountId(), request.getAmount(), request.getCurrency(), request.getEmail(), request.getPhoneNumber());
         return ResponseEntity.ok("Para çekme işlemi başarılı.");
     }
 
