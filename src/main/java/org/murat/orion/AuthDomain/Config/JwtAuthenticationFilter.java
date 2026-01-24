@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // LOG 1: Header geliyor mu?
+
         System.out.println("LOG 1: Filtre çalıştı. Header: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -46,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt = authHeader.substring(7);
 
         try {
-            // LOG 3: Token doğrulama öncesi
             boolean isTokenValidInitial = jwtService.validateToken(jwt);
             System.out.println("LOG 3: jwtService.validateToken sonucu: " + isTokenValidInitial);
 

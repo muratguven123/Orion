@@ -1,25 +1,31 @@
 package org.murat.orion.Notification.Entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Table(name = "notifications")
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "recipient", nullable = false)
-    private String recipient;
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "subject")
     private String subject;
@@ -31,7 +37,14 @@ public class Notification {
     @Column(name = "type")
     private NotificationType type;
 
+    @Column(name = "sent")
+    private boolean sent;
+
     @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "sent_at")
     private LocalDateTime sentAt;
 }
 

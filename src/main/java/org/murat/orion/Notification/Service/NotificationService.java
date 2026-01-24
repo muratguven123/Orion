@@ -37,11 +37,10 @@ public class NotificationService {
             log.error("Mail Gönderimi Sırasında Hata Meydana Geldi :" + e.getMessage());
         }
     }
-
     private void saveLogforEmail(Long userId, String email, String subject, String content) {
         Notification history = Notification.builder()
                 .userId(userId)
-                .recipient(email)
+                .email(email)
                 .subject(subject)
                 .messageBody(content)
                 .type(NotificationType.EMAIL)

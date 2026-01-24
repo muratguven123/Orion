@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface notificationRepository  extends JpaRepository<Notification,String> {
+public interface notificationRepository extends JpaRepository<Notification, Long> {
 
 }

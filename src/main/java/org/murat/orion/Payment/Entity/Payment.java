@@ -3,9 +3,6 @@ package org.murat.orion.Payment.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,18 +12,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// Tabloyu 'payment' şemasına koyuyoruz
-@Table(name = "payment", schema = "payment", indexes = {
+@Table(name = "payments", schema = "payment", indexes = {
         @Index(name = "idx_tx_source_acc", columnList = "source_account_id"),
         @Index(name = "idx_tx_target_acc", columnList = "target_account_id"),
         @Index(name = "idx_tx_ref_code", columnList = "reference_code")
 })
 public class Payment {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
 
     @Column(name = "source_account_id")
     private Long sourceAccountId;
