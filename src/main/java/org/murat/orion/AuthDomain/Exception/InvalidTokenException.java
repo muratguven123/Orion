@@ -1,5 +1,7 @@
 package org.murat.orion.AuthDomain.Exception;
 
+import jakarta.security.auth.message.AuthException;
+
 public class InvalidTokenException extends AuthException {
 
     public InvalidTokenException() {

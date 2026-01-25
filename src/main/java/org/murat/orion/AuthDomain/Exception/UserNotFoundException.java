@@ -1,12 +1,14 @@
 package org.murat.orion.AuthDomain.Exception;
-}
-    }
-        super("User not found with id: " + userId);
-    public UserNotFoundException(Long userId) {
 
-    }
-        super(message);
-    public UserNotFoundException(String message) {
+import jakarta.security.auth.message.AuthException;
 
 public class UserNotFoundException extends AuthException {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+
+    public UserNotFoundException(String username) {
+        super("User not found with username: " + username);
+    }
+}
 
