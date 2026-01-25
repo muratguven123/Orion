@@ -8,14 +8,15 @@ spring:
     password: ${EMAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.starttls.required: true
-
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.required: true
+      mail.smtp.socketFactory.port: ${MAIL_PORT}
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
       mail.smtp.ssl.protocols: TLSv1.2
-      mail.smtp.ssl.trust: smtp.gmail.com
-      mail.smtp.connectiontimeout: 10000
-      mail.smtp.timeout: 10000
-      mail.smtp.writetimeout: 10000
+      mail.smtp.ssl.trust: ${MAIL_HOST}
+      mail.smtp.connectiontimeout: 15000
+      mail.smtp.timeout: 15000
 
   datasource:
     url: ${DB_URL}

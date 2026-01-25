@@ -42,7 +42,7 @@ public class NotificationService {
         boolean isSent = false;
         try {
 
-            if (mailSender != null) {;
+            if (mailSender != null) {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom(fromEmail);
                 message.setTo(email);
