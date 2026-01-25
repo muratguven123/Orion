@@ -5,6 +5,7 @@ import org.murat.orion.Payment.Entity.PaymentTransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,18 +17,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PaymentRepository  extends JpaRepository<Payment, Integer> {
-@Query("Select p from Payment p  where p.sourceAccountId= :taccountId or p.targetAccountId=:taccountId order by p.createdAt desc")
-Page<Payment> findAllByAccountId(@Param("accountId") UUID accountId, Pageable pageable);
+public interface PaymentRepository extends JpaRepository<Payment, Integer>, JpaSpecificationExecutor<Payment> {
 
-Optional<Payment> findByReferenceCode(String referenceCode);
+    @Query("SELECT p FROM Payment p WHERE p.sourceAccountId = :accountId OR p.targetAccountId = :accountId ORDER BY p.createdAt DESC")
+    Page<Payment> findAllByAccountId(@Param("accountId") UUID accountId, Pageable pageable);
 
-Page<Payment> findByTargetAccountIdOrderByCreatedAtDesc(UUID targetAccountId, Pageable pageable);
+    Optional<Payment> findByReferenceCode(String referenceCode);
 
-Page<Payment> findBySourceAccountIdOrderByCreatedAtDesc(UUID sourceAccountId, Pageable pageable);
+    Page<Payment> findByTargetAccountIdOrderByCreatedAtDesc(UUID targetAccountId, Pageable pageable);
 
-@Query("SELECT SUM(t.amount) FROM Payment t WHERE t.sourceAccountId = :accountId AND t.createdAt > :startDate AND t.status = 'SUCCESS'")
-BigDecimal calculateTotalWithdrawalSince(@Param("accountId") UUID accountId, @Param("startDate") LocalDateTime startDate);
+    Page<Payment> findBySourceAccountIdOrderByCreatedAtDesc(UUID sourceAccountId, Pageable pageable);
 
-List<Payment> findByStatusAndCreatedAtBefore(PaymentTransactionStatus status, LocalDateTime dateTime);
+    @Query("SELECT SUM(t.amount) FROM Payment t WHERE t.sourceAccountId = :accountId AND t.createdAt > :startDate AND t.status = 'SUCCESS'")
+    BigDecimal calculateTotalWithdrawalSince(@Param("accountId") UUID accountId, @Param("startDate") LocalDateTime startDate);
+
+    List<Payment> findByStatusAndCreatedAtBefore(PaymentTransactionStatus status, LocalDateTime dateTime);
 }

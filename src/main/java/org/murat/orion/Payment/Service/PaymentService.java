@@ -5,17 +5,20 @@ import org.murat.orion.Notification.Events.Payment.DepositCompletedEvent;
 import org.murat.orion.Notification.Events.Payment.ProcessCompletedEvent;
 import org.murat.orion.Notification.Events.Payment.WithDrawComplicatedEvent;
 import org.murat.orion.Payment.Dto.Request.PaymentRequest;
+import org.murat.orion.Payment.Dto.Request.PaymentSearchRequest;
 import org.murat.orion.Payment.Dto.Request.PaymentTransferRequest;
 import org.murat.orion.Payment.Entity.Payment;
 import org.murat.orion.Payment.Entity.PaymentTransactionStatus;
 import org.murat.orion.Payment.Entity.PaymentTransactionType;
 
 import org.murat.orion.Payment.Repository.PaymentRepository;
+import org.murat.orion.Payment.Specification.PaymentSpecification;
 import org.murat.orion.Payment.İnterfaces.AccountİntegrationService;
 import org.murat.orion.Payment.İnterfaces.PaymentStrategy;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,6 +130,13 @@ public class PaymentService {
         return paymentRepository.findAllByAccountId(accountId, pageable)
                 .map(this::mapToDto);
     }
+
+    public Page<PaymentSearchRequest> searchRequests(PaymentSearchRequest request, Pageable pageable) {
+        Specification<Payment> spec = PaymentSpecification.getFilteredPayments(request);
+        return paymentRepository.findAll(spec, pageable)
+                .map(this::MapToDto);
+    }
+
     private PaymentTransferRequest mapToDto(Payment entity) {
         return PaymentTransferRequest.builder()
                 .referenceCode(entity.getReferenceCode())
@@ -138,6 +148,16 @@ public class PaymentService {
                 .description(entity.getDescription())
                 .sourceAccount(entity.getSourceAccountId() != null ? entity.getSourceAccountId().toString() : "ATM/BANKA")
                 .targetAccount(entity.getTargetAccountId() != null ? entity.getTargetAccountId().toString() : "ATM/BANKA")
+                .build();
+    }
+    private PaymentSearchRequest MapToDto(Payment entity) {
+        return PaymentSearchRequest.builder()
+                .type(entity.getType())
+                .currency(entity.getCurrency())
+                .minAmount(entity.getAmount().doubleValue())
+                .status(entity.getStatus().name())
+                .startDate(entity.getCreatedAt())
+                .endDate(entity.getCreatedAt())
                 .build();
     }
 }
