@@ -1,5 +1,6 @@
 package org.murat.orion.AccountDomain.Mapper;
 
+import org.murat.orion.AccountDomain.Dto.Request.AccountSearchRequest;
 import org.murat.orion.AccountDomain.Dto.Request.CreateAccountRequest;
 import org.murat.orion.AccountDomain.Dto.Response.AccountResponse;
 import org.murat.orion.AccountDomain.Entity.Account;
@@ -42,5 +43,13 @@ public class AccountMapper {
 
     private String generateAccountNumber() {
         return "ACC" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+    }
+
+    public AccountSearchRequest toSearchRequest(Account account) {
+        AccountSearchRequest searchRequest = new AccountSearchRequest();
+        searchRequest.setAccountName(account.getAccountName());
+        searchRequest.setAccountType(account.getAccountType());
+        searchRequest.setCurrency(account.getCurrency());
+        return searchRequest;
     }
 }

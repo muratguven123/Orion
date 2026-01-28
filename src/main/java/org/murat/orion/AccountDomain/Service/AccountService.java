@@ -1,6 +1,7 @@
 package org.murat.orion.AccountDomain.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.murat.orion.AccountDomain.Dto.Request.AccountSearchRequest;
 import org.murat.orion.AccountDomain.Dto.Request.CreateAccountRequest;
 import org.murat.orion.AccountDomain.Dto.Request.UpdateAccountRequest;
 import org.murat.orion.AccountDomain.Dto.Response.AccountListResponse;
@@ -9,8 +10,12 @@ import org.murat.orion.AccountDomain.Entity.Account;
 import org.murat.orion.AccountDomain.Entity.AccountStatus;
 import org.murat.orion.AccountDomain.Mapper.AccountMapper;
 import org.murat.orion.AccountDomain.Repository.AccountRepository;
+import org.murat.orion.AccountDomain.Specification.AccountSpecification;
 import org.murat.orion.Notification.Events.Account.*;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -235,5 +240,10 @@ public class AccountService {
     public boolean hasSufficientBalance(Long accountId, BigDecimal amount){
         Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
         return account.getBalance().compareTo(amount) >= 0;
+    }
+    public Page<AccountSearchRequest> searchRequests(AccountSearchRequest request, Pageable pageable) {
+        Specification<Account> spec = AccountSpecification.getFilteredPayments(request);
+        return accountRepository.findAll(spec, pageable)
+                .map(accountMapper::toSearchRequest);
     }
 }
