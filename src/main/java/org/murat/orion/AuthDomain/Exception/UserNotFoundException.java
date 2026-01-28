@@ -7,8 +7,8 @@ public class UserNotFoundException extends AuthException {
         super(message);
     }
 
-    public UserNotFoundException(String username) {
-        super("User not found with username: " + username);
+    public static UserNotFoundException withUsername(String username) {
+        return new UserNotFoundException("User not found with username: " + username);
     }
 }
 
