@@ -46,7 +46,7 @@ public class InvestService {
         this.investMapper = investMapper;
     }
     @Transactional
-    public void BuyAsset(InvesmetnRequest request){
+    public void buyAsset(InvesmetnRequest request){
         InvesmentStrategy strategy = investStrategyMap.get(request.getType());
         if (strategy == null) {
             log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
@@ -61,12 +61,13 @@ public class InvestService {
 
         investAccountService.debitBalance(request.getUserId(), totalCost);
 
-        Portfolio portfolio = portfolioRepository.findByUserIdAndType(request.getUserId(), request.getType())
+        Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
                 .orElseGet(() -> Portfolio.builder()
                         .userId(request.getUserId())
                         .symbol(request.getSymbol())
                         .type(request.getType())
                         .quantity(BigDecimal.ZERO)
+                        .averageCost(BigDecimal.ZERO)
                         .build());
         BigDecimal currentTotalValue = portfolio.getQuantity().multiply(portfolio.getAverageCost());
         BigDecimal newTotalValue = currentTotalValue.add(totalCost);
@@ -79,5 +80,37 @@ public class InvestService {
         Invesment invesment = investMapper.toEntity(request, currentPrice, totalCost);
         investRepository.save(invesment);
         log.info("Yatırım Başarılı! Yeni Portföy Adedi: {}", newTotalQuantity);
+    }
+    @Transactional
+    public void sellAsset(InvesmetnRequest request){
+        InvesmentStrategy strategy = investStrategyMap.get(request.getType());
+        if (strategy == null) {
+            log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
+            throw new RuntimeException("Yatırım stratejisi bulunamadı: " + request.getType());
+        }
+        strategy.validExecute(request.getSymbol());
+
+        Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
+                .orElseThrow(() -> new RuntimeException("Portföy bulunamadı."));
+
+        if (portfolio.getQuantity().compareTo(request.getQuantity()) < 0) {
+            log.error("Yetersiz varlık miktarı. Mevcut: {}, İstenen: {}",
+                    portfolio.getQuantity(), request.getQuantity());
+            throw new RuntimeException("Yetersiz varlık miktarı.");
+        }
+
+        BigDecimal currentPrice = marketDataProvider.getCurrentPrice(request.getSymbol());
+        BigDecimal totalProceeds = currentPrice.multiply(request.getQuantity());
+        log.info("SATIM EMRİ: {} adet {} @ {} - Toplam Gelir: {}",
+                request.getQuantity(), request.getSymbol(), currentPrice, totalProceeds);
+
+        portfolio.setQuantity(portfolio.getQuantity().subtract(request.getQuantity()));
+        portfolioRepository.save(portfolio);
+
+        investAccountService.creditBalance(request.getUserId(), totalProceeds);
+
+        Invesment invesment = investMapper.toEntity(request, currentPrice, totalProceeds);
+        investRepository.save(invesment);
+        log.info("Satış Başarılı! Kalan Portföy Adedi: {}", portfolio.getQuantity());
     }
 }
