@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class CryptoInvesmentStrategy implements InvesmentStrategy {
     @Override
     public InvestType getInvestType() {
-        return InvestType.Crypto;
+        return InvestType.CRYPTO;
     }
 
     @Override

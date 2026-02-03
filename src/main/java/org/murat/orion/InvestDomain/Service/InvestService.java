@@ -1,7 +1,7 @@
 package org.murat.orion.InvestDomain.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.murat.orion.InvestDomain.Dto.Request.InvesmetnRequest;
+import org.murat.orion.InvestDomain.Dto.Request.InvesmentRequest;
 import org.murat.orion.InvestDomain.Entity.Invesment;
 import org.murat.orion.InvestDomain.Entity.InvestType;
 import org.murat.orion.InvestDomain.Entity.Portfolio;
@@ -46,7 +46,7 @@ public class InvestService {
         this.investMapper = investMapper;
     }
     @Transactional
-    public void buyAsset(InvesmetnRequest request){
+    public void buyAsset(InvesmentRequest request){
         InvesmentStrategy strategy = investStrategyMap.get(request.getType());
         if (strategy == null) {
             log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
@@ -59,7 +59,7 @@ public class InvestService {
         log.info("ALIM EMRİ: {} adet {} @ {} - Toplam: {}",
                 request.getQuantity(), request.getSymbol(), currentPrice, totalCost);
 
-        investAccountService.debitBalance(request.getUserId(), totalCost);
+        investAccountService.debitBalance(request.getAccountId(), totalCost);
 
         Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
                 .orElseGet(() -> Portfolio.builder()
@@ -82,7 +82,7 @@ public class InvestService {
         log.info("Yatırım Başarılı! Yeni Portföy Adedi: {}", newTotalQuantity);
     }
     @Transactional
-    public void sellAsset(InvesmetnRequest request){
+    public void sellAsset(InvesmentRequest request){
         InvesmentStrategy strategy = investStrategyMap.get(request.getType());
         if (strategy == null) {
             log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
@@ -107,7 +107,7 @@ public class InvestService {
         portfolio.setQuantity(portfolio.getQuantity().subtract(request.getQuantity()));
         portfolioRepository.save(portfolio);
 
-        investAccountService.creditBalance(request.getUserId(), totalProceeds);
+        investAccountService.creditBalance(request.getAccountId(), totalProceeds);
 
         Invesment invesment = investMapper.toEntity(request, currentPrice, totalProceeds);
         investRepository.save(invesment);

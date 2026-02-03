@@ -12,7 +12,7 @@ import java.time.LocalTime;
 public class StockInvestmentStrategy implements InvesmentStrategy {
     @Override
     public InvestType getInvestType() {
-        return InvestType.Stock;
+        return InvestType.STOCK;
     }
 
     @Override
