@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "ınvest", schema = "invest_domain")
 @Getter
@@ -24,7 +25,7 @@ public class Invesment {
     @Column(name = "symbol", nullable = false)
     private String symbol;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = InvestTypeConverter.class)
     @Column(name = "transaction_type")
     private InvestType i̇nvestType;
 

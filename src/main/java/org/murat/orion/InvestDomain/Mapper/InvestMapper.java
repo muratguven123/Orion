@@ -1,5 +1,6 @@
 package org.murat.orion.InvestDomain.Mapper;
 
+import lombok.Data;
 import org.murat.orion.InvestDomain.Dto.Request.InvesmentRequest;
 import org.murat.orion.InvestDomain.Entity.Invesment;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
+@Data
 public class InvestMapper {
 
     public Invesment toEntity(InvesmentRequest request, BigDecimal currentPrice, BigDecimal totalCost) {

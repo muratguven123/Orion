@@ -19,13 +19,12 @@ public class StockInvestmentStrategy implements InvesmentStrategy {
     public void validExecute(String symbol) {
         LocalTime now = LocalTime.now();
         LocalTime marketOpen = LocalTime.of(9, 30);
-        LocalTime marketClose = LocalTime.of(16, 0);
-        if (now.isBefore(marketOpen) && now.isBefore(marketClose)) {
-            log.warn("StockInvestmentStrategy: Piyasa saatleri dışında işlem yapılamaz.");
-            throw new RuntimeException("Piyasa saatleri dışında işlem yapılamaz.");
-        }
-        log.info("StockInvestmentStrategy: Piyasa saatleri içinde işlem yapılabilir.");
+        LocalTime marketClose = LocalTime.of(18, 0);
 
+        if (now.isBefore(marketOpen) || now.isAfter(marketClose)) {
+            log.warn("StockInvestmentStrategy: Piyasa saatleri dışında (09:30-18:00), ancak işleme devam ediliyor.");
+        }
+        log.info("StockInvestmentStrategy: {} sembolü için işlem onaylandı.", symbol);
     }
 
 }

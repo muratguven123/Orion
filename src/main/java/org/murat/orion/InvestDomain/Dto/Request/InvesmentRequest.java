@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 @Builder
 public class InvesmentRequest {
     private Long userId;
-    private Long accountId;
     private String symbol;
     private BigDecimal quantity;
     private InvestType type;

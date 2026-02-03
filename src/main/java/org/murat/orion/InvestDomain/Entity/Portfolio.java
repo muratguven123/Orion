@@ -25,7 +25,7 @@ public class Portfolio {
     @Column(name = "symbol", nullable = false)
     private String symbol;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = InvestTypeConverter.class)
     @Column(name = "type")
     private InvestType type;
 

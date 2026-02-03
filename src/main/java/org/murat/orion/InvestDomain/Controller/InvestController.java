@@ -19,14 +19,20 @@ public class InvestController {
     private final InvestService investService;
     private final PortfolioRepository portfolioRepository;
 
-    @PostMapping(value = "/buy", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/buy", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> buyAsset(@RequestBody InvesmentRequest request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().body("Request body boş olamaz.");
+        }
         investService.buyAsset(request);
         return ResponseEntity.ok("Alım işlemi başarıyla gerçekleşti.");
     }
 
-    @PostMapping(value = "/sell", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/sell", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> sellAsset(@RequestBody InvesmentRequest request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().body("Request body boş olamaz.");
+        }
         investService.sellAsset(request);
         return ResponseEntity.ok("Satış işlemi başarıyla gerçekleşti.");
     }

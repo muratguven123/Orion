@@ -59,7 +59,7 @@ public class InvestService {
         log.info("ALIM EMRİ: {} adet {} @ {} - Toplam: {}",
                 request.getQuantity(), request.getSymbol(), currentPrice, totalCost);
 
-        investAccountService.debitBalance(request.getAccountId(), totalCost);
+        investAccountService.debitBalance(request.getUserId(), totalCost);
 
         Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
                 .orElseGet(() -> Portfolio.builder()
@@ -107,7 +107,7 @@ public class InvestService {
         portfolio.setQuantity(portfolio.getQuantity().subtract(request.getQuantity()));
         portfolioRepository.save(portfolio);
 
-        investAccountService.creditBalance(request.getAccountId(), totalProceeds);
+        investAccountService.creditBalance(request.getUserId(), totalProceeds);
 
         Invesment invesment = investMapper.toEntity(request, currentPrice, totalProceeds);
         investRepository.save(invesment);

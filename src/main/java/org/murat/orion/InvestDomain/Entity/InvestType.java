@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum InvestType {
-    STOCK("Stock"),
-    GOLD("Gold"),
-    CRYPTO("Crypto");
+    STOCK("stock"),
+    GOLD("gold"),
+    CRYPTO("crypto");
 
     private final String value;
 
