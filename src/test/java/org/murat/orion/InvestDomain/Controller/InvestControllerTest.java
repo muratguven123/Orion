@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -104,15 +106,14 @@ class InvestControllerTest {
                     .when(investService).buyAsset(any(InvesmentRequest.class));
 
             // When & Then
-            mockMvc.perform(post("/api/invest/buy")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(testRequest)))
-                    .andExpect(result -> {
-                        Exception exception = result.getResolvedException();
-                        assert exception != null;
-                        assert exception.getMessage().contains("Yetersiz bakiye");
-                    });
+            Exception exception = assertThrows(Exception.class, () -> {
+                mockMvc.perform(post("/api/invest/buy")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(testRequest)))
+                        .andReturn();
+            });
 
+            assertTrue(exception.getCause().getMessage().contains("Yetersiz bakiye"));
             verify(investService).buyAsset(any(InvesmentRequest.class));
         }
 
@@ -202,15 +203,14 @@ class InvestControllerTest {
                     .when(investService).sellAsset(any(InvesmentRequest.class));
 
             // When & Then
-            mockMvc.perform(post("/api/invest/sell")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(testRequest)))
-                    .andExpect(result -> {
-                        Exception exception = result.getResolvedException();
-                        assert exception != null;
-                        assert exception.getMessage().contains("Portföy bulunamadı");
-                    });
+            Exception exception = assertThrows(Exception.class, () -> {
+                mockMvc.perform(post("/api/invest/sell")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(testRequest)))
+                        .andReturn();
+            });
 
+            assertTrue(exception.getCause().getMessage().contains("Portföy bulunamadı"));
             verify(investService).sellAsset(any(InvesmentRequest.class));
         }
 
@@ -222,15 +222,14 @@ class InvestControllerTest {
                     .when(investService).sellAsset(any(InvesmentRequest.class));
 
             // When & Then
-            mockMvc.perform(post("/api/invest/sell")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(testRequest)))
-                    .andExpect(result -> {
-                        Exception exception = result.getResolvedException();
-                        assert exception != null;
-                        assert exception.getMessage().contains("Yetersiz varlık miktarı");
-                    });
+            Exception exception = assertThrows(Exception.class, () -> {
+                mockMvc.perform(post("/api/invest/sell")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(testRequest)))
+                        .andReturn();
+            });
 
+            assertTrue(exception.getCause().getMessage().contains("Yetersiz varlık miktarı"));
             verify(investService).sellAsset(any(InvesmentRequest.class));
         }
     }
