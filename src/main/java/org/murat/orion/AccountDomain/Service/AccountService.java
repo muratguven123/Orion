@@ -216,7 +216,6 @@ public class AccountService {
                 "Hesaptan Para Çekildi"
         );
         applicationEventPublisher.publishEvent(event);
-
     }
     @Transactional
     public void credit(Long accountId, BigDecimal amount, String email, String phoneNumber){
@@ -245,5 +244,15 @@ public class AccountService {
         Specification<Account> spec = AccountSpecification.getFilteredPayments(request);
         return accountRepository.findAll(spec, pageable)
                 .map(accountMapper::toSearchRequest);
+    }
+    @Transactional
+    public void debitv2(Long accountId, BigDecimal amount){
+        Account account = accountRepository.findById(accountId).orElseThrow(()-> new RuntimeException("Account not found"));
+
+        if(account.getBalance().compareTo(amount) < 0){
+            throw new RuntimeException("Yetersiz Bakiye"+account.getBalance());
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
     }
 }
