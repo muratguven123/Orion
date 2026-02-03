@@ -26,7 +26,7 @@ public class Invesment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
-    private İnvestType i̇nvestType;
+    private InvestType i̇nvestType;
 
     @Column(name = "price", precision = 19, scale = 2)
     private BigDecimal price;

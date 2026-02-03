@@ -27,7 +27,7 @@ public class Portfolio {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private İnvestType type;
+    private InvestType type;
 
     @Column(name = "quantity", precision = 19, scale = 4)
     private BigDecimal quantity;

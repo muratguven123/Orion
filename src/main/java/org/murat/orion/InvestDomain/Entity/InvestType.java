@@ -1,5 +1,5 @@
 package org.murat.orion.InvestDomain.Entity;
 
-public enum İnvestType {
+public enum InvestType {
     Stock,Gold,Crypto
 }
