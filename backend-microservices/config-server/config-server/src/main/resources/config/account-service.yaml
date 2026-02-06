@@ -20,3 +20,20 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/orion_account_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:190512}
+    driver-class-name: org.postgresql.Driver
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
