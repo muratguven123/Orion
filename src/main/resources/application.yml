@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: Orion
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.required: true
+      mail.smtp.socketFactory.port: ${MAIL_PORT}
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
+      mail.smtp.ssl.protocols: TLSv1.2
+      mail.smtp.ssl.trust: ${MAIL_HOST}
+      mail.smtp.connectiontimeout: 15000
+      mail.smtp.timeout: 15000
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:}
+    username: ${TELEGRAM_BOT_USERNAME:}
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:mySecretKey12345678901234567890123456789012}
+  expiration: 3600000
+  refresh-expiration: 604800000
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+    metrics:
+      tags:
+        application: ${spring.application.name}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
