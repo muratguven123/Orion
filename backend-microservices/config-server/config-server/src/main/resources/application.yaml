@@ -14,3 +14,13 @@ spring:
         git:
           uri: https://github.com/muratguven123/Orion
           default-label: main
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
