@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +32,69 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+*.log
+logs/
+spring.log
+
+### Maven ###
+.mvn/
+mvnw
+mvnw.cmd
+
+### Environment & Properties ###
+application-local.yml
+application-local.properties
+application-dev.yml
+application-dev.properties
+application-prod.yml
+.env
+.env.local
+.env.production
+application-prod.properties
+*.env
+.env
+.env.local
+.env.*.local
+
+### Secrets & Credentials ###
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+### OS Generated Files ###
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.swp
+*~
+
+### Package Files ###
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Test Output ###
+test-output/
+surefire-reports/
+
+### Coverage Reports ###
+jacoco.exec
+*.exec
+coverage/
+htmlReport/
+
