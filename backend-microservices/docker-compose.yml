@@ -1,5 +1,22 @@
 services:
-  # 1. Discovery Server (Eureka) - Telefon Rehberi
+  # 1. Config Server - Ayar Merkezi (İlk başlamalı)
+  config-server:
+    build: ./config-server/config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - orion-network
+
+  # 2. Discovery Server (Eureka) - Telefon Rehberi
   discovery-server:
     build: ./discovery-server/discovery-server
     container_name: discovery-server
@@ -9,19 +26,14 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
     depends_on:
-      - config-server
-    networks:
-      - orion-network
-
-  # 2. Config Server - Ayar Merkezi (Varsa kullan, yoksa yorum satırı yap)
-  config-server:
-    build: ./config-server/config-server
-    container_name: config-server
-    ports:
-      - "8888:8888"
-    environment:
-      - SPRING_PROFILES_ACTIVE=native
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - orion-network
 
@@ -30,14 +42,16 @@ services:
     build: ./api-gateway/api-gateway
     container_name: api-gateway
     ports:
-      - "8080:8080" # Gateway genelde dışarıya açılan tek kapıdır
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
-      - config-server
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     networks:
       - orion-network
 
@@ -50,8 +64,10 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
-      - api-gateway
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     networks:
       - orion-network
 
@@ -64,10 +80,14 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
-      - api-gateway
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     networks:
       - orion-network
+
+  # 6. Payment Service
   payment-service:
     build: ./payment-service/payment-service
     container_name: payment-service
@@ -76,8 +96,10 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
-      - api-gateway
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     networks:
       - orion-network
 

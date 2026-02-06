@@ -5,4 +5,4 @@ spring:
   application:
     name: invest-service
   config:
-    import: "optional:configserver:http://localhost:8888/"
+    import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"

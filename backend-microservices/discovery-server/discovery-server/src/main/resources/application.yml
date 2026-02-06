@@ -1,15 +1,24 @@
 server:
-  port: 8761 # Eureka'n?n standart portu budur.
+  port: 8761
 
 spring:
   application:
     name: discovery-server
   config:
-    import: "optional:configserver:http://localhost:8888/"
+    import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
 
 eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
   server:
-    wait-time-in-ms-when-sync-empty: 0 #
+    wait-time-in-ms-when-sync-empty: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
