@@ -1,0 +1,83 @@
+
+services:
+  # 1. Discovery Server (Eureka) - Telefon Rehberi
+  discovery-server:
+    build: ./discovery-server/discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - orion-network
+
+  # 2. Config Server - Ayar Merkezi (Varsa kullan, yoksa yorum satırı yap)
+  config-server:
+    build: ./config-server/config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+    networks:
+      - orion-network
+
+  # 3. API Gateway - Kapı Görevlisi
+  api-gateway:
+    build: ./api-gateway/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080" # Gateway genelde dışarıya açılan tek kapıdır
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+      - config-server
+    networks:
+      - orion-network
+
+  # 4. Account Service
+  account-service:
+    build: ./account-service
+    container_name: account-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+      - api-gateway
+    networks:
+      - orion-network
+
+  # 5. Invest Service
+  invest-service:
+    build: ./invest-service/invest-service
+    container_name: invest-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+      - api-gateway
+    networks:
+      - orion-network
+  payment-service:
+    build: ./payment-service/payment-service
+    container_name: payment-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+      - api-gateway
+    networks:
+      - orion-network
+
+
+networks:
+  orion-network:
+    driver: bridge
