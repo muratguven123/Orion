@@ -42,7 +42,7 @@ services:
     build: ./api-gateway/api-gateway
     container_name: api-gateway
     ports:
-      - "8080:8080"
+      - "8222:8222"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
