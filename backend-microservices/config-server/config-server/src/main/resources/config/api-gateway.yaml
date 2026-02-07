@@ -8,6 +8,22 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        # --- INVEST SERVICE ---
+        - id: invest-service
+          uri: lb://invest-service
+          predicates:
+            - Path=/api/invest/**
+        # --- ACCOUNT SERVICE ---
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/api/accounts/**
+        # --- PAYMENT SERVICE ---
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
 
 eureka:
   client:
@@ -15,6 +31,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 ---
+# DOCKER PROFİLİ (Docker'da çalışırken burası devreye girer)
 spring:
   config:
     activate:

@@ -5,35 +5,5 @@ spring:
   application:
     name: api-gateway
   config:
+    # Docker ortam değişkeni varsa onu kullan, yoksa localhost'a git
     import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true # Eureka'daki servisleri otomatik tanı
-          lower-case-service-id: true # Servis isimlerini küçük harfe çevir
-      routes:
-        # --- INVEST SERVICE ROTASI ---
-        - id: invest-service
-          uri: lb://invest-service # "lb" = Load Balancer. Eureka'dan "invest-service" ismini arar.
-          predicates:
-            - Path=/api/invest/** # "/api/invest" ile başlayan her şeyi buraya gönder.
-          # InvestController @RequestMapping("/api/invest") ile başlıyor.
-
-        # --- ACCOUNT SERVICE ROTASI ---
-        - id: account-service
-          uri: lb://account-service
-          predicates:
-            - Path=/api/accounts/**
-          # AccountController @RequestMapping("/api/accounts") ile başlıyor.
-
-        # --- PAYMENT SERVICE ROTASI ---
-        - id: payment-service
-          uri: lb://payment-service
-          predicates:
-            - Path=/api/payments/**
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/ # Gateway'in adres defterine (Eureka) bağlanması şart.

@@ -31,13 +31,13 @@ public class AccountController {
 
     @PostMapping("/internal/debit")
     public ResponseEntity<Void> debitBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
-        accountService.debitv2(userId, amount);
+        accountService.debitByUserId(userId, amount);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/internal/credit")
     public ResponseEntity<Void> creditBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
-        accountService.credit(userId, amount);
+        accountService.creditByUserId(userId, amount);
         return ResponseEntity.ok().build();
     }
 
