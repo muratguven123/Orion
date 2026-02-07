@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -19,12 +21,22 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<AccountResponse> createAccount(
             @RequestHeader("X-User-Id") Long userId,
             @Valid @RequestBody CreateAccountRequest request) {
         AccountResponse response = accountService.createAccount(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @PostMapping("/internal/debit")
+    public ResponseEntity<Void> debitBalance(@RequestParam("userId" ) Long userId,@RequestParam("amount") BigDecimal amount) {
+        accountService.debitv2(userId, amount);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/internal/credit")
+    public ResponseEntity<Void> creditBalance(@RequestParam("userId" ) Long userId,@RequestParam("amount") BigDecimal amount) {
+        accountService.credit(userId, amount);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{accountId}")
