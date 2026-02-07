@@ -7,6 +7,7 @@ import org.murat.orion.invest_service.entity.Portfolio;
 import org.murat.orion.invest_service.repository.PortfolioRepository;
 import org.murat.orion.invest_service.service.InvestService;
 
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/invest")
+@EnableFeignClients
 public class InvestController {
 
     private final InvestService investService;
