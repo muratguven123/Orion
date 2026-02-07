@@ -145,6 +145,38 @@ public class AccountService {
     }
 
     @Transactional
+    public void debitByUserId(Long userId, BigDecimal amount) {
+        List<Account> accounts = accountRepository.findByUserId(userId);
+
+        if (accounts.isEmpty()) {
+            throw new RuntimeException("Kullanıcıya ait hesap bulunamadı! UserID: " + userId);
+        }
+
+
+        Account account = accounts.get(0);
+
+        if (account.getBalance().compareTo(amount) < 0) {
+            throw new RuntimeException("Yetersiz Bakiye. Mevcut: " + account.getBalance());
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+    }
+
+    @Transactional
+    public void creditByUserId(Long userId, BigDecimal amount) {
+        List<Account> accounts = accountRepository.findByUserId(userId);
+
+        if (accounts.isEmpty()) {
+            throw new RuntimeException("Kullanıcıya ait hesap bulunamadı! UserID: " + userId);
+        }
+        Account account = accounts.get(0);
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+    }
+
+
+    @Transactional
     public void credit(Long accountId, BigDecimal amount) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));

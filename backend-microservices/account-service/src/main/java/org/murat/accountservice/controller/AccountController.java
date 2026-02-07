@@ -28,14 +28,35 @@ public class AccountController {
         AccountResponse response = accountService.createAccount(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     @PostMapping("/internal/debit")
-    public ResponseEntity<Void> debitBalance(@RequestParam("userId" ) Long userId,@RequestParam("amount") BigDecimal amount) {
+    public ResponseEntity<Void> debitBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
         accountService.debitv2(userId, amount);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/internal/credit")
-    public ResponseEntity<Void> creditBalance(@RequestParam("userId" ) Long userId,@RequestParam("amount") BigDecimal amount) {
+    public ResponseEntity<Void> creditBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
         accountService.credit(userId, amount);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/internal/debitV2")
+    public ResponseEntity<Void> debitBalanceV2(
+            @RequestParam("userId") Long userId,
+            @RequestParam("amount") BigDecimal amount) {
+        accountService.debitByUserId(userId, amount);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/internal/creditV2")
+    public ResponseEntity<Void> creditBalanceV2(
+            @RequestParam("userId") Long userId,
+            @RequestParam("amount") BigDecimal amount) {
+
+        accountService.creditByUserId(userId, amount);
+
         return ResponseEntity.ok().build();
     }
 
@@ -105,5 +126,7 @@ public class AccountController {
         AccountListResponse response = accountService.getAccountsByUserId(userId);
         return ResponseEntity.ok(response);
     }
+
+
 }
 
