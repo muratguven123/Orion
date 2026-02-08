@@ -161,7 +161,8 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
-        rabbitTemplate.convertAndSend("account-events", "account.debit", new AccountDebitedEvent(userId, amount,"debitByUserId"));
+        rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit",
+                new AccountDebitedEvent(userId, amount, "creditByUserId"));
         log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
 

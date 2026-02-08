@@ -1,14 +1,9 @@
 package com.org.orion.notification_service.Config;
-
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.Queue;
 @Configuration
 public class RabbitMQConfig {
