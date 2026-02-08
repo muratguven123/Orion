@@ -25,7 +25,7 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/invest_orion_db
+    url: jdbc:postgresql://postgres-db:5432/invest_orion_db
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:190512}
     driver-class-name: org.postgresql.Driver
