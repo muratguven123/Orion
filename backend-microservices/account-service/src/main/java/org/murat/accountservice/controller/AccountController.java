@@ -3,6 +3,7 @@ package org.murat.accountservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.murat.accountservice.dto.Request.CreateAccountRequest;
+import org.murat.accountservice.dto.Request.DebitBalanceRequest;
 import org.murat.accountservice.dto.Request.UpdateAccountRequest;
 import org.murat.accountservice.dto.Response.AccountListResponse;
 import org.murat.accountservice.dto.Response.AccountResponse;
@@ -10,17 +11,11 @@ import org.murat.accountservice.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-
-
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-
     private final AccountService accountService;
-
     @PostMapping("/create")
     public ResponseEntity<AccountResponse> createAccount(
             @RequestHeader("X-User-Id") Long userId,
@@ -28,38 +23,16 @@ public class AccountController {
         AccountResponse response = accountService.createAccount(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
     @PostMapping("/internal/debit")
-    public ResponseEntity<Void> debitBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
-        accountService.debitByUserId(userId, amount);
+    public ResponseEntity<Void> debitBalance(@RequestBody  DebitBalanceRequest request) {
+        accountService.debitByUserId(request.getUserId(), request.getAmount());
         return ResponseEntity.ok().build();
     }
-
     @PostMapping("/internal/credit")
-    public ResponseEntity<Void> creditBalance(@RequestParam("userId") Long userId, @RequestParam("amount") BigDecimal amount) {
-        accountService.creditByUserId(userId, amount);
+    public ResponseEntity<Void> creditBalance(@RequestBody  DebitBalanceRequest request) {
+        accountService.creditByUserId(request.getUserId(), request.getAmount());
         return ResponseEntity.ok().build();
     }
-
-
-    @PostMapping("/internal/debitV2")
-    public ResponseEntity<Void> debitBalanceV2(
-            @RequestParam("userId") Long userId,
-            @RequestParam("amount") BigDecimal amount) {
-        accountService.debitByUserId(userId, amount);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/internal/creditV2")
-    public ResponseEntity<Void> creditBalanceV2(
-            @RequestParam("userId") Long userId,
-            @RequestParam("amount") BigDecimal amount) {
-
-        accountService.creditByUserId(userId, amount);
-
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponse> getAccountById(
             @RequestHeader("X-User-Id") Long userId,
