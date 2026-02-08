@@ -2,14 +2,16 @@ package org.murat.accountservice.Event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
-public class AccountDebitedEvent {
-    long userId;
-    BigDecimal amount;
-    String message;
+public class AccountDebitedEvent implements Serializable {
+    private Long userId;
+    private BigDecimal amount;
+    private String message;
 }

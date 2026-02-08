@@ -176,7 +176,7 @@ public class AccountService {
         Account account = accounts.get(0);
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
-        rabbitTemplate.convertAndSend("account-events", "account.credit", new AccountDebitedEvent(userId, amount,"creditByUserId"));
+        rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit", new AccountDebitedEvent(userId, amount,"creditByUserId"));
         log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
 
