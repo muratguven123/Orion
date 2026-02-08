@@ -2,6 +2,8 @@ package org.murat.accountservice.service;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.murat.accountservice.Event.AccountDebitedEvent;
 import org.murat.accountservice.Mapper.AccountMapper;
 import org.murat.accountservice.dto.Request.AccountSearchRequest;
 import org.murat.accountservice.dto.Request.CreateAccountRequest;
@@ -13,6 +15,7 @@ import org.murat.accountservice.entity.AccountStatus;
 import org.murat.accountservice.exception.AccessDeniedException;
 import org.murat.accountservice.repository.AccountRepository;
 import org.murat.accountservice.specification.AccountSpecification;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,10 +29,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public AccountResponse createAccount(CreateAccountRequest request, Long userId) {
@@ -147,20 +152,17 @@ public class AccountService {
     @Transactional
     public void debitByUserId(Long userId, BigDecimal amount) {
         List<Account> accounts = accountRepository.findByUserId(userId);
-
         if (accounts.isEmpty()) {
             throw new RuntimeException("Kullanıcıya ait hesap bulunamadı! UserID: " + userId);
         }
-
-
         Account account = accounts.get(0);
-
         if (account.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Yetersiz Bakiye. Mevcut: " + account.getBalance());
         }
-
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
+        rabbitTemplate.convertAndSend("account-events", "account.debit", new AccountDebitedEvent(userId, amount,"debitByUserId"));
+        log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
 
     @Transactional
@@ -173,6 +175,8 @@ public class AccountService {
         Account account = accounts.get(0);
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
+        rabbitTemplate.convertAndSend("account-events", "account.credit", new AccountDebitedEvent(userId, amount,"creditByUserId"));
+        log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
 
 
@@ -207,4 +211,6 @@ public class AccountService {
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
     }
+
+
 }
