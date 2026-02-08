@@ -2,14 +2,13 @@ package com.org.orion.notification_service.Dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class AccountDebitedEvent {
+public class AccountDebitedEvent implements Serializable {
     private Long userId;
     private BigDecimal amount;
     private String message;

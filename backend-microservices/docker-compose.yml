@@ -109,6 +109,8 @@ services:
         condition: service_healthy
       postgres-db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - orion-network
 
