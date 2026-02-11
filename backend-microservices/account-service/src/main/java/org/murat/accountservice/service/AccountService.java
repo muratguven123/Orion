@@ -162,7 +162,7 @@ public class AccountService {
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
         rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit",
-                new AccountDebitedEvent(userId, amount, "creditByUserId"));
+                new AccountDebitedEvent(userId, amount, "debitbyuserid"));
         log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
 
@@ -179,16 +179,6 @@ public class AccountService {
         rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit", new AccountDebitedEvent(userId, amount,"creditByUserId"));
         log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
     }
-
-
-    @Transactional
-    public void credit(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        account.setBalance(account.getBalance().add(amount));
-        accountRepository.save(account);
-    }
-
     public boolean hasSufficientBalance(Long accountId, BigDecimal amount) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -201,17 +191,7 @@ public class AccountService {
                 .map(accountMapper::toSearchRequest);
     }
 
-    @Transactional
-    public void debitv2(Long accountId, BigDecimal amount) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Yetersiz Bakiye" + account.getBalance());
-        }
-        account.setBalance(account.getBalance().subtract(amount));
-        accountRepository.save(account);
-    }
 
 
 }
