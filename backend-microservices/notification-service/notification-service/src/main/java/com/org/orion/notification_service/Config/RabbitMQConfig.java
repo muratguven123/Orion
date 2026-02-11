@@ -2,13 +2,20 @@ package com.org.orion.notification_service.Config;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.Queue;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
     @Bean
-   public Queue notificationQueue() {
+    public Queue notificationQueue() {
         return new Queue("notification.queue", true);
     }
 
@@ -20,8 +27,18 @@ public class RabbitMQConfig {
     @Bean
     public Binding binding(Queue notificationQueue, TopicExchange internalExchange) {
         return BindingBuilder
-                .bind((org.springframework.amqp.core.Queue) notificationQueue)
+                .bind(notificationQueue)
                 .to(internalExchange)
                 .with("notification.#");
+    }
+    @Bean
+    public MessageConverter messageConverter() {
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+        Map<String, Class<?>> idClassMapping = new HashMap<>();
+        idClassMapping.put("org.murat.accountservice.Event.AccountDebitedEvent", com.org.orion.notification_service.Dto.AccountDebitedEvent.class);
+        DefaultClassMapper classMapper = new DefaultClassMapper();
+        classMapper.setIdClassMapping(idClassMapping);
+        converter.setClassMapper(classMapper);
+        return converter;
     }
 }
