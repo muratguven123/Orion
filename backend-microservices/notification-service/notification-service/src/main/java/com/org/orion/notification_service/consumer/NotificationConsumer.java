@@ -1,6 +1,6 @@
 package com.org.orion.notification_service.consumer;
 
-import com.org.orion.notification_service.Dto.AccountDebitedEvent;
+import com.org.orion.notification_service.dto.AccountDebitedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;

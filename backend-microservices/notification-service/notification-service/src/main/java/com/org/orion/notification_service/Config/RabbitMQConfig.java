@@ -35,7 +35,7 @@ public class RabbitMQConfig {
     public MessageConverter messageConverter() {
         Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
         Map<String, Class<?>> idClassMapping = new HashMap<>();
-        idClassMapping.put("org.murat.accountservice.Event.AccountDebitedEvent", com.org.orion.notification_service.Dto.AccountDebitedEvent.class);
+        idClassMapping.put("org.murat.accountservice.Event.AccountDebitedEvent", com.org.orion.notification_service.dto.AccountDebitedEvent.class);
         DefaultClassMapper classMapper = new DefaultClassMapper();
         classMapper.setIdClassMapping(idClassMapping);
         converter.setClassMapper(classMapper);

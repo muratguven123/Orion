@@ -1,4 +1,4 @@
-package com.org.orion.notification_service.Dto;
+package com.org.orion.notification_service.dto;
 
 import lombok.*;
 
