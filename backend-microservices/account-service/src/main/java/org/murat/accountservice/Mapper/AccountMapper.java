@@ -21,7 +21,7 @@ public class AccountMapper {
                 .accountName(request.getAccountName())
                 .accountType(request.getAccountType())
                 .status(AccountStatus.ACTIVE)
-                .balance(BigDecimal.ZERO)
+                .balance(request.getInitialDeposit() != null ? request.getInitialDeposit() : BigDecimal.ZERO)
                 .currency(request.getCurrency())
                 .isActive(true)
                 .build();
