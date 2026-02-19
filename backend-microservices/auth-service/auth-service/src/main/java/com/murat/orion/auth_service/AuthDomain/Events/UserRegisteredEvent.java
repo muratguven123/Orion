@@ -1,4 +1,4 @@
-package com.murat.orion.auth_service.Notification.Events.Auth;
+package com.murat.orion.auth_service.AuthDomain.Events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLogoutEvent {
+public class UserRegisteredEvent {
     private Long userId;
     private String email;
     private String phoneNumber;
     private String subject;
-    private LocalDateTime logoutAt;
+    private String firstName;
+    private String lastName;
+    private LocalDateTime registeredAt;
 }

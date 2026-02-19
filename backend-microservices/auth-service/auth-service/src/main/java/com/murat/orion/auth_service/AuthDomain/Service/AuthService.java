@@ -9,7 +9,7 @@ import com.murat.orion.auth_service.AuthDomain.Dto.Response.RegisterResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
 import com.murat.orion.auth_service.AuthDomain.Mapper.UserMapper;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
-import com.murat.orion.auth_service.Notification.Events.Auth.UserRegisteredEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

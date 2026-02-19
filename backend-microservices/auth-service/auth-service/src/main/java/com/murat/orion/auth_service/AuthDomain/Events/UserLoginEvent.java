@@ -1,4 +1,4 @@
-package com.murat.orion.auth_service.Notification.Events.Auth;
+package com.murat.orion.auth_service.AuthDomain.Events;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 import lombok.Builder;

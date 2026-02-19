@@ -1,4 +1,4 @@
-package com.murat.orion.auth_service.Notification.Events.Auth;
+package com.murat.orion.auth_service.AuthDomain.Events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginFailedEvent {
+public class OtpSentEvent {
     private Long userId;
-    private String email;
     private String phoneNumber;
+    private String email;
     private String subject;
-    private String ipAddress;
-    private String reason;
-    private LocalDateTime failedAt;
+    private String otpType;
+    private LocalDateTime sentAt;
+    private LocalDateTime expiresAt;
 }

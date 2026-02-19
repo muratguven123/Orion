@@ -9,10 +9,10 @@ import com.murat.orion.auth_service.AuthDomain.Dto.Response.LoginResponse;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.OtpResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
-import com.murat.orion.auth_service.Notification.Events.Auth.LoginFailedEvent;
-import com.murat.orion.auth_service.Notification.Events.Auth.OtpSentEvent;
-import com.murat.orion.auth_service.Notification.Events.Auth.OtpVerifiedEvent;
-import com.murat.orion.auth_service.Notification.Events.Auth.SmsLoginEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.LoginFailedEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.OtpSentEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.OtpVerifiedEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.SmsLoginEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 

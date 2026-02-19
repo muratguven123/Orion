@@ -1,4 +1,4 @@
-package com.murat.orion.auth_service.Notification.Events.Auth;
+package com.murat.orion.auth_service.AuthDomain.Events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OtpSentEvent {
+public class OtpVerifiedEvent {
     private Long userId;
     private String phoneNumber;
     private String email;
     private String subject;
     private String otpType;
-    private LocalDateTime sentAt;
-    private LocalDateTime expiresAt;
+    private LocalDateTime verifiedAt;
 }
