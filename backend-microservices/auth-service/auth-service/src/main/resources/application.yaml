@@ -6,6 +6,25 @@ spring:
     name: auth-service
   config:
     import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:/}
+    connection-timeout: 10000
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 1
+        concurrency: 1
+        max-concurrency: 10
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-interval: 10000
+          max-attempts: 3
+          multiplier: 2.0
 
 eureka:
   client:
