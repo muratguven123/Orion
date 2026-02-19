@@ -9,8 +9,6 @@ import com.murat.orion.auth_service.AuthDomain.Dto.Response.RegisterResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
 import com.murat.orion.auth_service.AuthDomain.Mapper.UserMapper;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
-import com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -38,15 +35,6 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        UserRegisteredEvent event = UserRegisteredEvent.builder()
-                .userId(savedUser.getId())
-                .email(savedUser.getEmail())
-                .phoneNumber(savedUser.getPhoneNumber())
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .registeredAt(LocalDateTime.now())
-                .build();
-        applicationEventPublisher.publishEvent(event);
 
         return userMapper.toRegisterResponse(savedUser);
     }
