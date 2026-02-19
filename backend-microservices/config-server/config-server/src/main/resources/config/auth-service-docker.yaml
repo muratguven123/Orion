@@ -1,0 +1,21 @@
+﻿server:
+  port: 9000
+
+spring:
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/orion_auth_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:190512}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
