@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=190512
-      - POSTGRES_MULTIPLE_DATABASES=orion_account_db,invest_orion_db,orion_payment_db,orion_notification_db
+      - POSTGRES_MULTIPLE_DATABASES=orion_account_db,invest_orion_db,orion_payment_db,orion_notification_db,orion_auth_db
     ports:
       - "5432:5432"
     volumes:
@@ -150,7 +150,25 @@ services:
     networks:
       - orion-network
 
-  # 7. Notification Service
+  # 7. Auth Service
+  auth-service:
+    build: ./auth-service/auth-service
+    container_name: auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - orion-network
+
+  # 8. Notification Service
   notification-service:
     build: ./notification-service/notification-service
     container_name: notification-service
