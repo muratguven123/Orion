@@ -3,12 +3,15 @@ package com.murat.orion.auth_service.AuthDomain.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.murat.orion.auth_service.AuthDomain.Config.JwtService;
+import com.murat.orion.auth_service.AuthDomain.Config.RabbitMqConfig;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.SendOtpRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.VerifyOtpRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.LoginResponse;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.OtpResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
+import com.murat.orion.auth_service.AuthDomain.Events.OtpSentEvent;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ public class SmsLoginStrategy {
     private final OtpService otpService;
     private final SmsService smsService;
     private final JwtService jwtService;
+    private final RabbitTemplate rabbitTemplate;
 
     private static final int OTP_EXPIRY_SECONDS = 300;
 
@@ -36,8 +40,24 @@ public class SmsLoginStrategy {
 
         smsService.sendOtp(phoneNumber, otpCode);
 
-        log.info("OTP gönderildi - Telefon: {}", maskPhoneNumber(phoneNumber));
+        LocalDateTime now = LocalDateTime.now();
+        OtpSentEvent event = new OtpSentEvent(
+                user.getId(),
+                phoneNumber,
+                user.getEmail(),
+                otpCode,
+                "SMS",
+                now,
+                now.plusSeconds(OTP_EXPIRY_SECONDS)
+        );
 
+        rabbitTemplate.convertAndSend(
+                RabbitMqConfig.INTERNAL_EXCHANGE,
+                RabbitMqConfig.ROUTING_KEY_OTP_SENT,
+                event
+        );
+
+        log.info("OTP sent event published - Telefon: {}", maskPhoneNumber(phoneNumber));
 
         return OtpResponse.builder()
                 .status("OTP_SENT")

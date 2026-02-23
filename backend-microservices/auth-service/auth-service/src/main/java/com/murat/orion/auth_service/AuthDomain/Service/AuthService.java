@@ -1,14 +1,18 @@
 package com.murat.orion.auth_service.AuthDomain.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import com.murat.orion.auth_service.AuthDomain.Config.JwtService;
+import com.murat.orion.auth_service.AuthDomain.Config.RabbitMqConfig;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.RefreshTokenRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.RegisterRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.RefreshTokenResponse;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.RegisterResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
+import com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent;
 import com.murat.orion.auth_service.AuthDomain.Mapper.UserMapper;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +21,14 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -35,6 +41,22 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        UserRegisteredEvent event = new UserRegisteredEvent(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getPhoneNumber(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                savedUser.getCreatedAt()
+        );
+
+        rabbitTemplate.convertAndSend(
+                RabbitMqConfig.INTERNAL_EXCHANGE,
+                RabbitMqConfig.ROUTING_KEY_USER_REGISTERED,
+                event
+        );
+
+        log.info("User registered event published for userId: {}", savedUser.getId());
 
         return userMapper.toRegisterResponse(savedUser);
     }
