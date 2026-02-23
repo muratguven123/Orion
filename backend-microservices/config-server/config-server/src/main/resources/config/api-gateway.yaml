@@ -29,6 +29,12 @@ spring:
           uri: lb://notification-service
           predicates:
             - Path=/api/notifications/**
+        # --- AUTH SERVICE ---
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
 
 eureka:
   client:
