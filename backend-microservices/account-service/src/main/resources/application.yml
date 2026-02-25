@@ -7,6 +7,15 @@ spring:
   config:
     import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  packages-to-scan: org.murat.accountservice
+  show-actuator: false
+
 eureka:
   client:
     service-url:
