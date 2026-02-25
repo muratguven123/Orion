@@ -14,7 +14,16 @@ public class RouteValidator {
             "/api/auth/login/sms/send-otp",
             "/api/auth/login/sms/verify",
             "/api/auth/refresh-token",
-            "/eureka/**"
+            "/euraka/**",
+            "/swagger-ui",
+            "/swagger-ui/",
+            "/swagger-ui.html",
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/webjars/",
+            "/account-service/v3/api-docs",
+            "/auth-service/v3/api-docs",
+            "/invest-service/v3/api-docs"
     );
     public Predicate<ServerHttpRequest> isSecured=
             request ->openApiEndpoints
