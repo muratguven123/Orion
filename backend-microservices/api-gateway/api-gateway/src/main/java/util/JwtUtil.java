@@ -37,4 +37,7 @@ public class JwtUtil {
         public void validateToken(final String token) {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
         }
+        public String extractUserId(String token) {
+            return extractClaim(token, Claims::getSubject);
+        }
 }
