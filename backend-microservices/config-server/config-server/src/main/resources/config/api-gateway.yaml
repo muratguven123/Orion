@@ -9,31 +9,36 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        # --- INVEST SERVICE ---
-        - id: invest-service
-          uri: lb://invest-service
-          predicates:
-            - Path=/api/invest/**
         # --- ACCOUNT SERVICE ---
         - id: account-service
           uri: lb://account-service
           predicates:
             - Path=/api/accounts/**
+          filters:
+            - AuthenticationFilter
+
         # --- PAYMENT SERVICE ---
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/api/payments/**
-        # --- NOTIFICATION SERVICE ---
-        - id: notification-service
-          uri: lb://notification-service
+          filters:
+            - AuthenticationFilter
+
+        # --- INVEST SERVICE ---
+        - id: invest-service
+          uri: lb://invest-service
           predicates:
-            - Path=/api/notifications/**
+            - Path=/api/invests/**
+          filters:
+            - AuthenticationFilter
+
         # --- AUTH SERVICE ---
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**
+
 
 
 eureka:
