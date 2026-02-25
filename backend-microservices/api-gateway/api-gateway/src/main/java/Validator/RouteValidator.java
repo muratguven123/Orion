@@ -14,7 +14,7 @@ public class RouteValidator {
             "/api/auth/login/sms/send-otp",
             "/api/auth/login/sms/verify",
             "/api/auth/refresh-token",
-            "/euraka/**"
+            "/eureka/**"
     );
     public Predicate<ServerHttpRequest> isSecured=
             request ->openApiEndpoints
