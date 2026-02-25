@@ -154,16 +154,24 @@ services:
   auth-service:
     build: ./auth-service/auth-service
     container_name: auth-service
+    ports:
+      - "9000:9000"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
     depends_on:
       config-server:
         condition: service_healthy
       discovery-server:
         condition: service_healthy
       postgres-db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - orion-network
