@@ -30,7 +30,9 @@ public class JwtService {
     private long refreshExpiration;
 
     public String generateToken(User user) {
-        return buildToken(new HashMap<>(), user, jwtExpiration);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", user.getId());
+        return buildToken(extraClaims, user, jwtExpiration);
     }
 
     public String generateRefreshToken(User user) {
