@@ -15,6 +15,15 @@ spring:
       hibernate:
         format_sql: true
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  packages-to-scan: com.murat.orion.auth_service
+  show-actuator: false
+
 eureka:
   client:
     service-url:
