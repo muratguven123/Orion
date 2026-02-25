@@ -7,3 +7,82 @@ spring:
   config:
     # Docker ortam değişkeni varsa onu kullan, yoksa localhost'a git
     import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # --- ACCOUNT SERVICE ---
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - AuthenticationFilter
+
+        # --- ACCOUNT SERVICE SWAGGER ---
+        - id: account-service-api-docs
+          uri: lb://account-service
+          predicates:
+            - Path=/account-service/v3/api-docs/**
+          filters:
+            - RewritePath=/account-service/(?<path>.*), /$\{path}
+
+        # --- PAYMENT SERVICE ---
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - AuthenticationFilter
+
+        # --- INVEST SERVICE ---
+        - id: invest-service
+          uri: lb://invest-service
+          predicates:
+            - Path=/api/invest/**
+          filters:
+            - AuthenticationFilter
+
+        # --- INVEST SERVICE SWAGGER ---
+        - id: invest-service-api-docs
+          uri: lb://invest-service
+          predicates:
+            - Path=/invest-service/v3/api-docs/**
+          filters:
+            - RewritePath=/invest-service/(?<path>.*), /$\{path}
+
+        # --- AUTH SERVICE ---
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
+        # --- AUTH SERVICE SWAGGER ---
+        - id: auth-service-api-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/v3/api-docs/**
+          filters:
+            - RewritePath=/auth-service/(?<path>.*), /$\{path}
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Auth Service
+        url: /auth-service/v3/api-docs
+      - name: Account Service
+        url: /account-service/v3/api-docs
+      - name: Invest Service
+        url: /invest-service/v3/api-docs
+    path: /swagger-ui.html
+    use-root-path: true
+  api-docs:
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
