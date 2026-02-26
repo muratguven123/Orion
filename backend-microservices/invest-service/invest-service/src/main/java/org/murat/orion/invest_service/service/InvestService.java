@@ -1,6 +1,7 @@
 package org.murat.orion.invest_service.service;
 
 import org.murat.orion.invest_service.dto.request.InvesmentRequest;
+import org.murat.orion.invest_service.dto.request.BalanceRequest;
 import org.murat.orion.invest_service.entity.InvestType;
 import org.murat.orion.invest_service.entity.Investment;
 import org.murat.orion.invest_service.entity.Portfolio;
@@ -62,7 +63,7 @@ public class InvestService {
         log.info("ALIM EMRİ: {} adet {} @ {} - Toplam: {}",
                 request.getQuantity(), request.getSymbol(), currentPrice, totalCost);
 
-        investAccountService.debitBalance(request.getUserId(), totalCost);
+        investAccountService.debitBalance(new BalanceRequest(request.getUserId(), totalCost));
 
         Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
                 .orElseGet(() -> Portfolio.builder()
@@ -111,7 +112,7 @@ public class InvestService {
         portfolio.setQuantity(portfolio.getQuantity().subtract(request.getQuantity()));
         portfolioRepository.save(portfolio);
 
-        investAccountService.creditBalance(request.getUserId(), totalProceeds);
+        investAccountService.creditBalance(new BalanceRequest(request.getUserId(), totalProceeds));
 
         Investment investment = investMapper.toEntity(request, currentPrice, totalProceeds);
         investRepository.save(investment);

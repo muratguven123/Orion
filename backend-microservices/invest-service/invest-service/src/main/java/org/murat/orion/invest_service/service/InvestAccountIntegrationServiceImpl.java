@@ -1,7 +1,6 @@
 package org.murat.orion.invest_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.murat.orion.invest_service.dto.request.BalanceRequest;
 import org.murat.orion.invest_service.interfaces.AccountServiceClient;
 import org.murat.orion.invest_service.interfaces.InvestAccountIntegrationService;
 import org.slf4j.Logger;
