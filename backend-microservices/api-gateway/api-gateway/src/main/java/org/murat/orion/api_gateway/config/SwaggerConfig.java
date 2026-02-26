@@ -57,6 +57,7 @@ public class SwaggerConfig {
         String[] parts = name.split("-");
         StringBuilder sb = new StringBuilder();
         for (String part : parts) {
+            if (part.isEmpty()) continue;
             if (!sb.isEmpty()) sb.append(" ");
             sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
         }
