@@ -29,7 +29,7 @@ public class SwaggerConfig {
         return args -> {
             List<RouteDefinition> routes = routeDefinitionLocator.getRouteDefinitions()
                     .collectList()
-                    .block(Duration.ofSeconds(10));
+                    .block(Duration.ofSeconds(30));
 
             Set<AbstractSwaggerUiConfigProperties.SwaggerUrl> urls = new LinkedHashSet<>();
 
