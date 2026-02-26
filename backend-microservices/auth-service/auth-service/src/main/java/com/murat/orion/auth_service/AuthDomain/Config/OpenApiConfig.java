@@ -6,8 +6,11 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -17,10 +20,14 @@ public class OpenApiConfig {
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
+                .servers(List.of(
+                        new Server().url("http://localhost:8222").description("API Gateway"),
+                        new Server().url("http://localhost:9000").description("Auth Service Direct")
+                ))
                 .info(new Info()
-                        .title("Orion API")
+                        .title("Auth Service API")
                         .version("1.0")
-                        .description("Orion Banking Application API Documentation")
+                        .description("Orion Banking Application - Auth Service API Documentation")
                         .contact(new Contact()
                                 .name("Murat")
                                 .email("murat@orion.com")))
