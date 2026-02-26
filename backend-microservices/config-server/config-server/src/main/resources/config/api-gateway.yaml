@@ -73,9 +73,11 @@ springdoc:
       - name: Invest Service
         url: /invest-service/v3/api-docs
     path: /swagger-ui.html
-    use-root-path: true
+    disable-swagger-default-url: true
   api-docs:
     enabled: true
+  cache:
+    disabled: true
 
 eureka:
   client:
