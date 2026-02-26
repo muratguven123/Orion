@@ -1,6 +1,7 @@
 package org.murat.orion.invest_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.murat.orion.invest_service.dto.request.BalanceRequest;
 import org.murat.orion.invest_service.interfaces.AccountServiceClient;
 import org.murat.orion.invest_service.interfaces.InvestAccountIntegrationService;
 import org.slf4j.Logger;
@@ -24,13 +25,13 @@ public class InvestAccountIntegrationServiceImpl implements InvestAccountIntegra
     @Override
     public void debitBalance(Long userId, BigDecimal amount) {
         log.info("Bakiye cekiliyor: userId={}, amount={}", userId, amount);
-        accountServiceClient.debitBalance(userId, amount);
+        accountServiceClient.debitBalance(new BalanceRequest(userId, amount));
     }
 
     @Override
     public void creditBalance(Long userId, BigDecimal amount) {
         log.info("Bakiye ekleniyor: userId={}, amount={}", userId, amount);
-     accountServiceClient.creditBalance(userId, amount);
+        accountServiceClient.creditBalance(new BalanceRequest(userId, amount));
     }
 
     @Override
