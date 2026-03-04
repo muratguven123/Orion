@@ -61,6 +61,7 @@ public class AuthService {
             outboxEvent.setPayload(objectMapper.writeValueAsString(event));
             outboxEvent.setProcessed(false);
             outboxEventRepository.save(outboxEvent);
+            log.info("outbox event created for user registration: userId={}, eventId={}", savedUser.getId(), outboxEvent.getId());
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Event JSON serialize hatası", e);
         }

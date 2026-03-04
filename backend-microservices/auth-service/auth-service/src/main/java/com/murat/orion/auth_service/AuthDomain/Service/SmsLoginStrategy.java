@@ -12,6 +12,7 @@ import com.murat.orion.auth_service.AuthDomain.Dto.Response.OtpResponse;
 import com.murat.orion.auth_service.AuthDomain.Entity.OutboxEvent;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
 import com.murat.orion.auth_service.AuthDomain.Events.OtpSentEvent;
+import com.murat.orion.auth_service.AuthDomain.Events.SmsLoginEvent;
 import com.murat.orion.auth_service.AuthDomain.Repository.OutboxEventRepository;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,7 @@ public class SmsLoginStrategy {
     }
 
 
+    @Transactional
     public LoginResponse verifyOtpAndLogin(VerifyOtpRequest request) {
         String phoneNumber = request.getPhoneNumber();
         String verificationCode = request.getVerificationCode();
@@ -92,8 +94,29 @@ public class SmsLoginStrategy {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        log.info("SMS login başarılı - Kullanıcı: {}", user.getEmail());
+        LocalDateTime now = LocalDateTime.now();
 
+        SmsLoginEvent event = SmsLoginEvent.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .subject("SMS Login")
+                .loginAt(now)
+                .build();
+
+        try {
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateType("User");
+            outboxEvent.setAggregateId(user.getId());
+            outboxEvent.setEventType("SmsLoginEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+            outboxEvent.setProcessed(false);
+            outboxEventRepository.save(outboxEvent);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Event JSON serialize hatası", e);
+        }
+
+        log.info("SMS login outbox event saved for userId: {}", user.getId());
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
@@ -106,7 +129,7 @@ public class SmsLoginStrategy {
                 .lastName(user.getLastName())
                 .role(user.getRole().name())
                 .phoneNumber(user.getPhoneNumber())
-                .loginTime(LocalDateTime.now())
+                .loginTime(now)
                 .status("SUCCESS")
                 .build();
     }

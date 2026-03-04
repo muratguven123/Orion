@@ -23,7 +23,9 @@ public class OutboxEventScheduler {
 
     private static final Map<String, String> ROUTING_KEY_MAP = Map.of(
             "UserRegisteredEvent", RabbitMqConfig.ROUTING_KEY_USER_REGISTERED,
-            "OtpSentEvent", RabbitMqConfig.ROUTING_KEY_OTP_SENT
+            "OtpSentEvent", RabbitMqConfig.ROUTING_KEY_OTP_SENT,
+            "EmailLoginEvent", RabbitMqConfig.ROUTING_KEY_EMAIL_LOGIN,
+            "SmsLoginEvent", RabbitMqConfig.ROUTING_KEY_SMS_LOGIN
     );
 
     @Scheduled(fixedDelay = 5000)

@@ -29,14 +29,14 @@ public class OutboxEvent {
     @Column(name = "event_type", nullable = false, length = 255)
     private String eventType;
 
-    // PostgreSQL JSON kolonu için string olarak saklama
+
     @Column(name = "payload", nullable = false, columnDefinition = "json")
     private String payload;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "processed", nullable = false)
+    @Column(name = "processed", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean processed = false;
 
     public OutboxEvent() {
@@ -89,4 +89,9 @@ public class OutboxEvent {
     public void setProcessed(Boolean processed) {
         this.processed = processed;
     }
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
 }
