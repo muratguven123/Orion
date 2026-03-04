@@ -13,6 +13,8 @@ public class RabbitMqConfig {
 
     public static final String ROUTING_KEY_USER_REGISTERED = "notification.auth.registered";
     public static final String ROUTING_KEY_OTP_SENT = "notification.auth.otp";
+    public static final String ROUTING_KEY_EMAIL_LOGIN = "notification.auth.email-login";
+    public static final String ROUTING_KEY_SMS_LOGIN = "notification.auth.sms-login";
 
     @Bean
     public TopicExchange internalExchange() {
