@@ -2,6 +2,9 @@ package com.murat.orion.auth_service.AuthDomain.Entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,10 +33,11 @@ public class OutboxEvent {
     private String eventType;
 
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "payload", nullable = false, columnDefinition = "json")
     private String payload;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "processed", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
