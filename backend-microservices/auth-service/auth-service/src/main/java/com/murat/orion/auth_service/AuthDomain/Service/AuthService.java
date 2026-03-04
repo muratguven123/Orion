@@ -1,18 +1,20 @@
 package com.murat.orion.auth_service.AuthDomain.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.murat.orion.auth_service.AuthDomain.Config.JwtService;
-import com.murat.orion.auth_service.AuthDomain.Config.RabbitMqConfig;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.RefreshTokenRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Request.RegisterRequest;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.RefreshTokenResponse;
 import com.murat.orion.auth_service.AuthDomain.Dto.Response.RegisterResponse;
+import com.murat.orion.auth_service.AuthDomain.Entity.OutboxEvent;
 import com.murat.orion.auth_service.AuthDomain.Entity.User;
 import com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent;
 import com.murat.orion.auth_service.AuthDomain.Mapper.UserMapper;
+import com.murat.orion.auth_service.AuthDomain.Repository.OutboxEventRepository;
 import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -50,13 +53,19 @@ public class AuthService {
                 savedUser.getCreatedAt()
         );
 
-        rabbitTemplate.convertAndSend(
-                RabbitMqConfig.INTERNAL_EXCHANGE,
-                RabbitMqConfig.ROUTING_KEY_USER_REGISTERED,
-                event
-        );
+        try {
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateType("User");
+            outboxEvent.setAggregateId(savedUser.getId());
+            outboxEvent.setEventType("UserRegisteredEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+            outboxEvent.setProcessed(false);
+            outboxEventRepository.save(outboxEvent);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Event JSON serialize hatası", e);
+        }
 
-        log.info("User registered event published for userId: {}", savedUser.getId());
+        log.info("User registered outbox event saved for userId: {}", savedUser.getId());
 
         return userMapper.toRegisterResponse(savedUser);
     }
