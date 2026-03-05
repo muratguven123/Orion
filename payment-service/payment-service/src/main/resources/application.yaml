@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: payment-service
+  config:
+    import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
