@@ -30,5 +30,6 @@ if [ -n "$POSTGRES_MULTIPLE_DATABASES" ]; then
 
 	# Create required schemas
 	create_schemas "orion_auth_db" "identity"
+	create_schemas "orion_account_db" "account"
 	echo "Required schemas created"
 fi
