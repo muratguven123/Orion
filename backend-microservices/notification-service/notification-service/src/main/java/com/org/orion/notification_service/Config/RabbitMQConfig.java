@@ -37,10 +37,18 @@ public class RabbitMQConfig {
         Map<String, Class<?>> idClassMapping = new HashMap<>();
         idClassMapping.put("org.murat.accountservice.Event.AccountDebitedEvent",
                 com.org.orion.notification_service.dto.AccountDebitedEvent.class);
+        idClassMapping.put("org.murat.accountservice.Event.AccountCreditedEvent",
+                com.org.orion.notification_service.dto.AccountCreditedEvent.class);
+        // Auth Service events
         idClassMapping.put("com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent",
                 com.org.orion.notification_service.dto.UserRegisteredEvent.class);
         idClassMapping.put("com.murat.orion.auth_service.AuthDomain.Events.OtpSentEvent",
                 com.org.orion.notification_service.dto.OtpSentEvent.class);
+        // Invest Service events
+        idClassMapping.put("org.murat.orion.invest_service.event.InvestmentBuyEvent",
+                com.org.orion.notification_service.dto.InvestmentBuyEvent.class);
+        idClassMapping.put("org.murat.orion.invest_service.event.InvestmentSellEvent",
+                com.org.orion.notification_service.dto.InvestmentSellEvent.class);
         DefaultClassMapper classMapper = new DefaultClassMapper();
         classMapper.setIdClassMapping(idClassMapping);
         classMapper.setTrustedPackages("*");
