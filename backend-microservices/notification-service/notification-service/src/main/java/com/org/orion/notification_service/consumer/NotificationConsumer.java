@@ -2,7 +2,10 @@ package com.org.orion.notification_service.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.org.orion.notification_service.dto.AccountCreditedEvent;
 import com.org.orion.notification_service.dto.AccountDebitedEvent;
+import com.org.orion.notification_service.dto.InvestmentBuyEvent;
+import com.org.orion.notification_service.dto.InvestmentSellEvent;
 import com.org.orion.notification_service.dto.OtpSentEvent;
 import com.org.orion.notification_service.dto.UserRegisteredEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +54,21 @@ public class NotificationConsumer {
                 AccountDebitedEvent event = objectMapper.readValue(jsonPayload, AccountDebitedEvent.class);
                 handleAccountDebitedEvent(event);
 
+            } else if (routingKey.endsWith("account.credited") || (typeId != null && typeId.contains("AccountCreditedEvent"))) {
+
+                AccountCreditedEvent event = objectMapper.readValue(jsonPayload, AccountCreditedEvent.class);
+                handleAccountCreditedEvent(event);
+
+            } else if (routingKey.endsWith("invest.buy") || (typeId != null && typeId.contains("InvestmentBuyEvent"))) {
+
+                InvestmentBuyEvent event = objectMapper.readValue(jsonPayload, InvestmentBuyEvent.class);
+                handleInvestmentBuyEvent(event);
+
+            } else if (routingKey.endsWith("invest.sell") || (typeId != null && typeId.contains("InvestmentSellEvent"))) {
+
+                InvestmentSellEvent event = objectMapper.readValue(jsonPayload, InvestmentSellEvent.class);
+                handleInvestmentSellEvent(event);
+
             } else {
                 log.warn("Bu Routing Key için bir işleyici (handler) tanımlanmamış: {}", routingKey);
             }
@@ -60,9 +78,31 @@ public class NotificationConsumer {
         }
     }
     private void handleAccountDebitedEvent(AccountDebitedEvent event) {
-        log.info("MESAJ ALINDI: UserID: {}, Tutar: {}, Mesaj: {}",
+        log.info("HESAP BORÇLANDIRMA: UserID: {}, Tutar: {}, Mesaj: {}",
                 event.getUserId(), event.getAmount(), event.getMessage());
-        log.info("SMS Gönderiliyor... [BAŞARILI]");
+        log.info("Hesap borçlandırma bildirimi gönderiliyor... [BAŞARILI]");
+    }
+
+    private void handleAccountCreditedEvent(AccountCreditedEvent event) {
+        log.info("HESAP ALACAKLANDIRMA: UserID: {}, Tutar: {}, Mesaj: {}",
+                event.getUserId(), event.getAmount(), event.getMessage());
+        log.info("Hesap alacaklandırma bildirimi gönderiliyor... [BAŞARILI]");
+    }
+
+    private void handleInvestmentBuyEvent(InvestmentBuyEvent event) {
+        log.info("YATIRIM ALIM: UserID: {}, Sembol: {}, Tip: {}, Adet: {}, Fiyat: {}, Toplam: {}",
+                event.getUserId(), event.getSymbol(), event.getType(),
+                event.getQuantity(), event.getPrice(), event.getTotalCost());
+        log.info("Yatırım alım bildirimi gönderiliyor: {} {} adet @ {} [BAŞARILI]",
+                event.getSymbol(), event.getQuantity(), event.getPrice());
+    }
+
+    private void handleInvestmentSellEvent(InvestmentSellEvent event) {
+        log.info("YATIRIM SATIM: UserID: {}, Sembol: {}, Tip: {}, Adet: {}, Fiyat: {}, Toplam Gelir: {}",
+                event.getUserId(), event.getSymbol(), event.getType(),
+                event.getQuantity(), event.getPrice(), event.getTotalProceeds());
+        log.info("Yatırım satım bildirimi gönderiliyor: {} {} adet @ {} [BAŞARILI]",
+                event.getSymbol(), event.getQuantity(), event.getPrice());
     }
 
     private void handleUserRegisteredEvent(UserRegisteredEvent event) {
