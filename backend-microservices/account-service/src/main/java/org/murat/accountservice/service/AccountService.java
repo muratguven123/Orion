@@ -1,8 +1,11 @@
 package org.murat.accountservice.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.murat.accountservice.Event.AccountCreditedEvent;
 import org.murat.accountservice.Event.AccountDebitedEvent;
 import org.murat.accountservice.Mapper.AccountMapper;
 import org.murat.accountservice.dto.Request.AccountSearchRequest;
@@ -12,10 +15,11 @@ import org.murat.accountservice.dto.Response.AccountListResponse;
 import org.murat.accountservice.dto.Response.AccountResponse;
 import org.murat.accountservice.entity.Account;
 import org.murat.accountservice.entity.AccountStatus;
+import org.murat.accountservice.entity.OutboxEvent;
 import org.murat.accountservice.exception.AccessDeniedException;
 import org.murat.accountservice.repository.AccountRepository;
+import org.murat.accountservice.repository.OutboxEventRepository;
 import org.murat.accountservice.specification.AccountSpecification;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,7 +38,8 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public AccountResponse createAccount(CreateAccountRequest request, Long userId) {
@@ -161,9 +166,20 @@ public class AccountService {
         }
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
-        rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit",
-                new AccountDebitedEvent(userId, amount, "debitbyuserid"));
-        log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
+
+        try {
+            AccountDebitedEvent event = new AccountDebitedEvent(userId, amount, "Hesaptan " + amount + " TL çekildi");
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateType("Account");
+            outboxEvent.setAggregateId(account.getId());
+            outboxEvent.setEventType("AccountDebitedEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+            outboxEvent.setProcessed(false);
+            outboxEventRepository.save(outboxEvent);
+            log.info("Account debit outbox event kaydedildi: userId={}, amount={}", userId, amount);
+        } catch (JsonProcessingException e) {
+            log.error("Account debit event JSON serialize hatası", e);
+        }
     }
 
     @Transactional
@@ -176,8 +192,20 @@ public class AccountService {
         Account account = accounts.get(0);
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
-        rabbitTemplate.convertAndSend("internal.exchange", "notification.account.credit", new AccountDebitedEvent(userId, amount,"creditByUserId"));
-        log.info("RabbitMQ'ya mesaj gönderildi: User " + userId);
+
+        try {
+            AccountCreditedEvent event = new AccountCreditedEvent(userId, amount, "Hesaba " + amount + " TL yatırıldı");
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateType("Account");
+            outboxEvent.setAggregateId(account.getId());
+            outboxEvent.setEventType("AccountCreditedEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+            outboxEvent.setProcessed(false);
+            outboxEventRepository.save(outboxEvent);
+            log.info("Account credit outbox event kaydedildi: userId={}, amount={}", userId, amount);
+        } catch (JsonProcessingException e) {
+            log.error("Account credit event JSON serialize hatası", e);
+        }
     }
     public boolean hasSufficientBalance(Long accountId, BigDecimal amount) {
         Account account = accountRepository.findById(accountId)
