@@ -5,6 +5,8 @@ import com.murat.orion.auth_service.AuthDomain.Entity.OutboxEvent;
 import com.murat.orion.auth_service.AuthDomain.Repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,14 @@ public class OutboxEventScheduler {
             "EmailLoginEvent", RabbitMqConfig.ROUTING_KEY_EMAIL_LOGIN,
             "SmsLoginEvent", RabbitMqConfig.ROUTING_KEY_SMS_LOGIN
     );
+    private static final Map<String, String> TYPE_ID_MAP = Map.of(
+            "UserRegisteredEvent", "com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent",
+            "OtpSentEvent", "com.murat.orion.auth_service.AuthDomain.Events.OtpSentEvent",
+            "EmailLoginEvent", "com.murat.orion.auth_service.AuthDomain.Events.EmailLoginEvent",
+            "SmsLoginEvent", "com.murat.orion.auth_service.AuthDomain.Events.SmsLoginEvent"
+    );
+
+
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
@@ -45,11 +55,20 @@ public class OutboxEventScheduler {
                         event.getEventType(),
                         "unknown.event"
                 );
+                String typeId = TYPE_ID_MAP.getOrDefault(
+                        event.getEventType(),
+                        "java.lang.Object"
+                );
+                MessageProperties messageProperties = new MessageProperties();
+                messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+                messageProperties.setHeader("__TypeId__", typeId);
+
+                Message message = new Message(event.getPayload().getBytes("UTF-8"), messageProperties);
 
                 rabbitTemplate.convertAndSend(
                         RabbitMqConfig.INTERNAL_EXCHANGE,
                         routingKey,
-                        event.getPayload()
+                        message
                 );
 
                 event.setProcessed(true);
