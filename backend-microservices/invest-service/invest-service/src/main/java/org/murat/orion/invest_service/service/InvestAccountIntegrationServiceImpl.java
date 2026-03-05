@@ -1,6 +1,7 @@
 package org.murat.orion.invest_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.murat.orion.invest_service.dto.request.BalanceRequest;
 import org.murat.orion.invest_service.interfaces.AccountServiceClient;
 import org.murat.orion.invest_service.interfaces.InvestAccountIntegrationService;
 import org.slf4j.Logger;
@@ -22,15 +23,15 @@ public class InvestAccountIntegrationServiceImpl implements InvestAccountIntegra
     private final Map<Long, BigDecimal> balanceMap = new ConcurrentHashMap<>();
 
     @Override
-    public void debitBalance(Long userId, BigDecimal amount) {
-        log.info("Bakiye cekiliyor: userId={}, amount={}", userId, amount);
-        accountServiceClient.debitBalance(new BalanceRequest(userId, amount));
+    public void debitBalance(BalanceRequest request) {
+        log.info("Bakiye cekiliyor: userId={}, amount={}", request.getUserId(), request.getAmount());
+        accountServiceClient.debitBalance(request);
     }
 
     @Override
-    public void creditBalance(Long userId, BigDecimal amount) {
-        log.info("Bakiye ekleniyor: userId={}, amount={}", userId, amount);
-        accountServiceClient.creditBalance(new BalanceRequest(userId, amount));
+    public void creditBalance(BalanceRequest request) {
+        log.info("Bakiye ekleniyor: userId={}, amount={}", request.getUserId(), request.getAmount());
+        accountServiceClient.creditBalance(request);
     }
 
     @Override
