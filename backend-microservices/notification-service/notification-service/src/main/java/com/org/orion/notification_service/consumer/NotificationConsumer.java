@@ -7,6 +7,9 @@ import com.org.orion.notification_service.dto.AccountDebitedEvent;
 import com.org.orion.notification_service.dto.InvestmentBuyEvent;
 import com.org.orion.notification_service.dto.InvestmentSellEvent;
 import com.org.orion.notification_service.dto.OtpSentEvent;
+import com.org.orion.notification_service.dto.PaymentDepositEvent;
+import com.org.orion.notification_service.dto.PaymentTransferEvent;
+import com.org.orion.notification_service.dto.PaymentWithdrawEvent;
 import com.org.orion.notification_service.dto.UserRegisteredEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -69,6 +72,21 @@ public class NotificationConsumer {
                 InvestmentSellEvent event = objectMapper.readValue(jsonPayload, InvestmentSellEvent.class);
                 handleInvestmentSellEvent(event);
 
+            } else if (routingKey.endsWith("payment.deposit") || (typeId != null && typeId.contains("PaymentDepositEvent"))) {
+
+                PaymentDepositEvent event = objectMapper.readValue(jsonPayload, PaymentDepositEvent.class);
+                handlePaymentDepositEvent(event);
+
+            } else if (routingKey.endsWith("payment.withdraw") || (typeId != null && typeId.contains("PaymentWithdrawEvent"))) {
+
+                PaymentWithdrawEvent event = objectMapper.readValue(jsonPayload, PaymentWithdrawEvent.class);
+                handlePaymentWithdrawEvent(event);
+
+            } else if (routingKey.endsWith("payment.transfer") || (typeId != null && typeId.contains("PaymentTransferEvent"))) {
+
+                PaymentTransferEvent event = objectMapper.readValue(jsonPayload, PaymentTransferEvent.class);
+                handlePaymentTransferEvent(event);
+
             } else {
                 log.warn("Bu Routing Key için bir işleyici (handler) tanımlanmamış: {}", routingKey);
             }
@@ -115,5 +133,24 @@ public class NotificationConsumer {
         log.info("OTP bildirimi alındı - UserID: {}, Telefon: {}, Tip: {}",
                 event.getUserId(), event.getPhoneNumber(), event.getOtpType());
         log.info("OTP SMS bildirimi gönderiliyor: {} [BAŞARILI]", event.getPhoneNumber());
+    }
+
+    private void handlePaymentDepositEvent(PaymentDepositEvent event) {
+        log.info("PARA YATIRMA: AccountID: {}, Tutar: {} {}, Ref: {}",
+                event.getAccountId(), event.getAmount(), event.getCurrency(), event.getReferenceCode());
+        log.info("Para yatırma bildirimi gönderiliyor... [BAŞARILI]");
+    }
+
+    private void handlePaymentWithdrawEvent(PaymentWithdrawEvent event) {
+        log.info("PARA ÇEKME: AccountID: {}, Tutar: {} {}, Ref: {}",
+                event.getAccountId(), event.getAmount(), event.getCurrency(), event.getReferenceCode());
+        log.info("Para çekme bildirimi gönderiliyor... [BAŞARILI]");
+    }
+
+    private void handlePaymentTransferEvent(PaymentTransferEvent event) {
+        log.info("HAVALE/TRANSFER: Kaynak: {} -> Hedef: {}, Tutar: {} {}, Ref: {}",
+                event.getSourceAccountId(), event.getTargetAccountId(),
+                event.getAmount(), event.getCurrency(), event.getReferenceCode());
+        log.info("Transfer bildirimi gönderiliyor... [BAŞARILI]");
     }
 }

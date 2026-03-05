@@ -49,6 +49,13 @@ public class RabbitMQConfig {
                 com.org.orion.notification_service.dto.InvestmentBuyEvent.class);
         idClassMapping.put("org.murat.orion.invest_service.event.InvestmentSellEvent",
                 com.org.orion.notification_service.dto.InvestmentSellEvent.class);
+        // Payment Service events
+        idClassMapping.put("org.murat.orion.payment_service.event.PaymentDepositEvent",
+                com.org.orion.notification_service.dto.PaymentDepositEvent.class);
+        idClassMapping.put("org.murat.orion.payment_service.event.PaymentWithdrawEvent",
+                com.org.orion.notification_service.dto.PaymentWithdrawEvent.class);
+        idClassMapping.put("org.murat.orion.payment_service.event.PaymentTransferEvent",
+                com.org.orion.notification_service.dto.PaymentTransferEvent.class);
         DefaultClassMapper classMapper = new DefaultClassMapper();
         classMapper.setIdClassMapping(idClassMapping);
         classMapper.setTrustedPackages("*");
