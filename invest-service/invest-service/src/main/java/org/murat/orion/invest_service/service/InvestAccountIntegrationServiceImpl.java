@@ -1,0 +1,41 @@
+package org.murat.orion.invest_service.service;
+
+import lombok.RequiredArgsConstructor;
+import org.murat.orion.invest_service.dto.request.BalanceRequest;
+import org.murat.orion.invest_service.interfaces.AccountServiceClient;
+import org.murat.orion.invest_service.interfaces.InvestAccountIntegrationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+
+@Service
+@RequiredArgsConstructor
+public class InvestAccountIntegrationServiceImpl implements InvestAccountIntegrationService {
+
+    private static final Logger log = LoggerFactory.getLogger(InvestAccountIntegrationServiceImpl.class);
+    private final AccountServiceClient accountServiceClient;
+
+    private final Map<Long, BigDecimal> balanceMap = new ConcurrentHashMap<>();
+
+    @Override
+    public void debitBalance(BalanceRequest request) {
+        log.info("Bakiye cekiliyor: userId={}, amount={}", request.getUserId(), request.getAmount());
+        accountServiceClient.debitBalance(request);
+    }
+
+    @Override
+    public void creditBalance(BalanceRequest request) {
+        log.info("Bakiye ekleniyor: userId={}, amount={}", request.getUserId(), request.getAmount());
+        accountServiceClient.creditBalance(request);
+    }
+
+    @Override
+    public BigDecimal getCurrentBalance(Long userId) {
+        return balanceMap.getOrDefault(userId, BigDecimal.valueOf(100000));
+    }
+}

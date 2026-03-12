@@ -1,0 +1,107 @@
+package com.murat.orion.auth_service.AuthDomain.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import com.murat.orion.auth_service.AuthDomain.Config.JwtService;
+import com.murat.orion.auth_service.AuthDomain.Dto.Request.RefreshTokenRequest;
+import com.murat.orion.auth_service.AuthDomain.Dto.Request.RegisterRequest;
+import com.murat.orion.auth_service.AuthDomain.Dto.Response.RefreshTokenResponse;
+import com.murat.orion.auth_service.AuthDomain.Dto.Response.RegisterResponse;
+import com.murat.orion.auth_service.AuthDomain.Entity.OutboxEvent;
+import com.murat.orion.auth_service.AuthDomain.Entity.User;
+import com.murat.orion.auth_service.AuthDomain.Events.UserRegisteredEvent;
+import com.murat.orion.auth_service.AuthDomain.Mapper.UserMapper;
+import com.murat.orion.auth_service.AuthDomain.Repository.OutboxEventRepository;
+import com.murat.orion.auth_service.AuthDomain.Repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+    private final JwtService jwtService;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
+
+    @Transactional
+    public RegisterResponse register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Bu email adresi zaten kayıtlı");
+        }
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        User user = userMapper.toEntity(request, encodedPassword);
+
+        User savedUser = userRepository.save(user);
+
+        UserRegisteredEvent event = new UserRegisteredEvent(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getPhoneNumber(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                savedUser.getCreatedAt()
+        );
+
+        try {
+            OutboxEvent outboxEvent = new OutboxEvent();
+            outboxEvent.setAggregateType("User");
+            outboxEvent.setAggregateId(savedUser.getId());
+            outboxEvent.setEventType("UserRegisteredEvent");
+            outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+            outboxEvent.setProcessed(false);
+            outboxEventRepository.save(outboxEvent);
+            log.info("outbox event created for user registration: userId={}, eventId={}", savedUser.getId(), outboxEvent.getId());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Event JSON serialize hatası", e);
+        }
+
+        log.info("User registered outbox event saved for userId: {}", savedUser.getId());
+
+        return userMapper.toRegisterResponse(savedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        if (!jwtService.validateToken(refreshToken)) {
+            throw new RuntimeException("Geçersiz veya süresi dolmuş refresh token");
+        }
+
+        String email = jwtService.extractUsername(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        String newAccessToken = jwtService.generateToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        LocalDateTime now = LocalDateTime.now();
+        long accessTokenExpiration = jwtService.getExpirationTime();
+        long refreshTokenExpiration = jwtService.getRefreshExpirationTime();
+
+        return RefreshTokenResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .tokenType("Bearer")
+                .accessTokenExpiresIn(accessTokenExpiration)
+                .refreshTokenExpiresIn(refreshTokenExpiration)
+                .issuedAt(now)
+                .accessTokenExpiresAt(now.plusSeconds(accessTokenExpiration / 1000))
+                .refreshTokenExpiresAt(now.plusSeconds(refreshTokenExpiration / 1000))
+                .status("SUCCESS")
+                .message("Token başarıyla yenilendi")
+                .build();
+    }
+}

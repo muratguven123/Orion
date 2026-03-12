@@ -1,0 +1,89 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orion_account_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:190512}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  packages-to-scan: org.murat.accountservice
+  show-actuator: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres-db:5432/orion_account_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:190512}
+    driver-class-name: org.postgresql.Driver
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+resilience4j:
+  retry:
+    instances:
+      accountService:
+        maxAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        enableRandomizedWait: true
+        randomizedWaitFactor: 0.5
+        ignoreExceptions:
+             - io.github.resilience4j.circuitbreaker.CallNotPermittedException
+  circuitbreaker:
+    instances:
+      accountService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000ms
+        permittedNumberOfCallsInHalfOpenState: 3
+  ratelimiter:
+    instances:
+      accountService:
+        limitForPeriod: 50
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0s
+  bulkhead:
+    instances:
+      accountService:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 50ms
