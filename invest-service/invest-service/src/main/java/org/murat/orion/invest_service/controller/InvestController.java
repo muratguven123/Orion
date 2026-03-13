@@ -1,6 +1,5 @@
 package org.murat.orion.invest_service.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.murat.orion.invest_service.dto.request.InvesmentRequest;
 
@@ -26,26 +25,16 @@ public class InvestController {
 
     @PostMapping(value = "/buy", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> buyAsset(@RequestBody InvesmentRequest request) {
-        try {
-            investService.buyAsset(request);
-            return ResponseEntity.ok("Alım işlemi başarıyla gerçekleşti.");
-        } catch (feign.FeignException e) {
-            return ResponseEntity.status(e.status()).body("Hesap servisi hatası: " + e.contentUTF8());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("İşlem başarısız: " + e.getMessage());
-        }
+        investService.buyAsset(request);
+        return ResponseEntity.ok("Alım işlemi başarıyla gerçekleşti.");
     }
+
     @PostMapping(value = "/sell", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> sellAsset(@RequestBody InvesmentRequest request) {
-        try {
-            investService.sellAsset(request);
-            return ResponseEntity.ok("Satım işlemi başarıyla gerçekleşti.");
-        } catch (feign.FeignException e) {
-            return ResponseEntity.status(e.status()).body("Hesap servisi hatası: " + e.contentUTF8());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("İşlem başarısız: " + e.getMessage());
-        }
+        investService.sellAsset(request);
+        return ResponseEntity.ok("Satım işlemi başarıyla gerçekleşti.");
     }
+
     @GetMapping("/portfolio/{userId}")
     public ResponseEntity<List<Portfolio>> getUserPortfolio(@PathVariable Long userId) {
         List<Portfolio> assets = portfolioRepository.findByUserId(userId);
