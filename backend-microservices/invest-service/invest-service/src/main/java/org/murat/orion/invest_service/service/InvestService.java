@@ -17,6 +17,9 @@ import org.murat.orion.invest_service.repository.PortfolioRepository;
 import org.murat.orion.invest_service.interfaces.InvestmentStrategy;
 import org.murat.orion.invest_service.interfaces.InvestAccountIntegrationService;
 import org.murat.orion.invest_service.interfaces.MarketDataProvider;
+import org.murat.orion.invest_service.exception.InsufficientAssetException;
+import org.murat.orion.invest_service.exception.PortfolioNotFoundException;
+import org.murat.orion.invest_service.exception.StrategyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -67,7 +70,7 @@ public class InvestService {
         InvestmentStrategy strategy = investStrategyMap.get(request.getType());
         if (strategy == null) {
             log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
-            throw new RuntimeException("Yatırım stratejisi bulunamadı: " + request.getType());
+            throw new StrategyNotFoundException(String.valueOf(request.getType()));
         }
         strategy.validExecute(request.getSymbol());
 
@@ -127,17 +130,17 @@ public class InvestService {
         InvestmentStrategy strategy = investStrategyMap.get(request.getType());
         if (strategy == null) {
             log.error("Yatırım stratejisi bulunamadı: {}", request.getType());
-            throw new RuntimeException("Yatırım stratejisi bulunamadı: " + request.getType());
+            throw new StrategyNotFoundException(String.valueOf(request.getType()));
         }
         strategy.validExecute(request.getSymbol());
 
         Portfolio portfolio = portfolioRepository.findByUserIdAndSymbol(request.getUserId(), request.getSymbol())
-                .orElseThrow(() -> new RuntimeException("Portföy bulunamadı."));
+                .orElseThrow(() -> new PortfolioNotFoundException(request.getUserId(), request.getSymbol()));
 
         if (portfolio.getQuantity().compareTo(request.getQuantity()) < 0) {
             log.error("Yetersiz varlık miktarı. Mevcut: {}, İstenen: {}",
                     portfolio.getQuantity(), request.getQuantity());
-            throw new RuntimeException("Yetersiz varlık miktarı.");
+            throw new InsufficientAssetException(portfolio.getQuantity(), request.getQuantity());
         }
 
         BigDecimal currentPrice = marketDataProvider.getCurrentPrice(request.getSymbol());
