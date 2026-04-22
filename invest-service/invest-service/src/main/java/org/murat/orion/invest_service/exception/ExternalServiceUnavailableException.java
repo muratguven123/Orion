@@ -1,6 +1,8 @@
 package org.murat.orion.invest_service.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 public class ExternalServiceUnavailableException extends BusinessException {
 

@@ -1,7 +1,9 @@
 package org.murat.orion.invest_service.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@RestControllerAdvice
 public abstract class BusinessException extends RuntimeException {
 
     private final HttpStatus status;
