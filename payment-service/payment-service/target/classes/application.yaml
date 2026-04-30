@@ -1,0 +1,8 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: payment-service
+  config:
+    import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
