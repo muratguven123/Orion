@@ -3,12 +3,25 @@
 *.iml
 *.iws
 *.ipr
+.vscode/
+.classpath
+.project
+.factorypath
+.settings/
+.springBeans
+.sts4-cache/
+out/
 
 # Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+build/
+nbbuild/
+dist/
+nbdist/
+/.nb-gradle/
 
 # Build
 *.jar
@@ -22,9 +35,16 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
+surefire-reports/
+test-output/
 
 # Env files
 .env
+.env.*
+
+# Spring Boot generated docs
+HELP.md
 
 # Package files
 *.orig
