@@ -1,9 +1,0 @@
-server:
-  port: 8222
-
-spring:
-  application:
-    name: api-gateway
-  config:
-    # Docker ortam değişkeni varsa onu kullan, yoksa localhost'a git
-    import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
