@@ -1,0 +1,49 @@
+server:
+  port: 8222
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # --- INVEST SERVICE ---
+        - id: invest-service
+          uri: lb://invest-service
+          predicates:
+            - Path=/api/invest/**
+        # --- ACCOUNT SERVICE ---
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/api/accounts/**
+        # --- PAYMENT SERVICE ---
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+        # --- NOTIFICATION SERVICE ---
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+# DOCKER PROFİLİ (Docker'da çalışırken burası devreye girer)
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
