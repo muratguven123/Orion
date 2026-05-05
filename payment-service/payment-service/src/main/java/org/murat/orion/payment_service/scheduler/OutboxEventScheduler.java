@@ -72,9 +72,8 @@ public class OutboxEventScheduler {
                         routingKey,
                         message
                 );
-
-                event.setProcessed(true);
                 publishToKafka(event);
+                event.setProcessed(true);
                 outboxEventRepository.save(event);
 
                 log.info("Payment outbox event published: id={}, type={}, routingKey={}",

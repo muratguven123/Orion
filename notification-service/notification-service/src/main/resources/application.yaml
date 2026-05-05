@@ -23,15 +23,15 @@ spring:
           max-interval: 10000
           max-attempts: 3
           multiplier: 2.0
-kafka:
-  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-  consumer:
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
     group-id: notification-service-audit
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     auto-offset-reset: earliest
     enable-auto-commit: false
-  listener:
+    listener:
     ack-mode: manual
 eureka:
   client:

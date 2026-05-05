@@ -67,8 +67,8 @@ public class OutboxEventScheduler {
                         message
                 );
                 publishToKafka(event);
-                outboxEventRepository.save(event);
                 event.setProcessed(true);
+                outboxEventRepository.save(event);
 
                 log.info("Invest outbox event published: id={}, type={}, routingKey={}",
                         event.getId(), event.getEventType(), routingKey);
@@ -80,9 +80,9 @@ public class OutboxEventScheduler {
         }
     }
     private void publishToKafka(OutboxEvent event) throws Exception {
-        String routingKey = ROUTING_KEY_MAP.getOrDefault(event.getEventType(), "unknown.event");
+        String routingKey = ROUTING_KEY_MAP.getOrDefault(event.getEventType(), "orion.invest.events");
         kafkaTemplate.send(
-                KafkaConfig.TOPIC_İNVEST_EVENTS,
+                KafkaConfig.TOPIC_INVEST_EVENTS,
                 routingKey,
                 event.getPayload()
         );

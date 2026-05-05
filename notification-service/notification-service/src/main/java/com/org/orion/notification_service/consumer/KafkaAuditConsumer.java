@@ -33,4 +33,14 @@ public class KafkaAuditConsumer {
             log.error("Kafka mesajı işlenemedi: {}", e.getMessage(), e);
         }
     }
-}
+    private void handlePaymentEvent(JsonNode payload) {
+        log.info("Payment event işlendi: {}", payload.toString());
+    }
+    private void handleInvestEvent(JsonNode payload) {
+        log.info("Invest event işlendi: {}", payload.toString());
+    }
+    private void handleAccountEvent(JsonNode payload) {
+        log.info("Account event işlendi: {}", payload.toString());
+    }
+    }
+
