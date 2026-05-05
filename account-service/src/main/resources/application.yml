@@ -6,6 +6,16 @@ spring:
     name: account-service
   config:
     import: "${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888/}"
+  kafka:
+   bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+   producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    acks: all
+    properties:
+      enable.idempotence: true
+      max.in.flight.requests.per.connection: 5
+    retries: 3
 
 springdoc:
   api-docs:
@@ -20,16 +30,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-kafka:
-  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-  producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      # acks=all: tüm in-sync replica'lar onay verene kadar bekler. Finansal veride şart.
-      acks: all
-      # Idempotent producer: aynı mesajın tekrar tekrar yazılmasını engeller (retry durumunda).
-      properties:
-        enable.idempotence: true
-        # Sıralamanın bozulmaması için max in-flight 5 ile sınırlı (idempotence ile uyumlu)
-        max.in.flight.requests.per.connection: 5
-      retries: 3
