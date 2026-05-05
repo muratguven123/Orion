@@ -2,12 +2,14 @@ package org.murat.orion.payment_service.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.murat.orion.payment_service.config.KafkaConfig;
 import org.murat.orion.payment_service.config.RabbitMqConfig;
 import org.murat.orion.payment_service.entity.OutboxEvent;
 import org.murat.orion.payment_service.repository.OutboxEventRepository;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ public class OutboxEventScheduler {
 
     private final OutboxEventRepository outboxEventRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     private static final Map<String, String> ROUTING_KEY_MAP = Map.of(
             "PaymentDepositEvent", RabbitMqConfig.ROUTING_KEY_PAYMENT_DEPOSIT,
@@ -70,6 +74,7 @@ public class OutboxEventScheduler {
                 );
 
                 event.setProcessed(true);
+                publishToKafka(event);
                 outboxEventRepository.save(event);
 
                 log.info("Payment outbox event published: id={}, type={}, routingKey={}",
@@ -81,5 +86,19 @@ public class OutboxEventScheduler {
             }
         }
     }
-}
 
+    private void publishToKafka(OutboxEvent event) {
+        String key = event.getAggregateType() + "-" + event.getAggregateId();
+        kafkaTemplate.send(KafkaConfig.TOPIC_PAYMENT_EVENTS, key, event.getPayload())
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error("Kafka'ya gönderilemedi: id={}, hata={}", event.getId(), ex.getMessage());
+                    } else {
+                        log.debug("Kafka'ya gönderildi: id={}, partition={}, offset={}",
+                                event.getId(),
+                                result.getRecordMetadata().partition(),
+                                result.getRecordMetadata().offset());
+                    }
+                });
+    }
+}
