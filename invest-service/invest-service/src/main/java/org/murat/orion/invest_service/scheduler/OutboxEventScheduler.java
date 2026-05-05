@@ -54,21 +54,17 @@ public class OutboxEventScheduler {
                         event.getEventType(),
                         "java.lang.Object"
                 );
-
                 MessageProperties messageProperties = new MessageProperties();
                 messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
                 messageProperties.setHeader("__TypeId__", typeId);
-
                 Message message = new Message(event.getPayload().getBytes("UTF-8"), messageProperties);
-
                 rabbitTemplate.convertAndSend(
                         RabbitMqConfig.INTERNAL_EXCHANGE,
                         routingKey,
                         message
                 );
-
-                event.setProcessed(true);
                 outboxEventRepository.save(event);
+                event.setProcessed(true);
 
                 log.info("Invest outbox event published: id={}, type={}, routingKey={}",
                         event.getId(), event.getEventType(), routingKey);
