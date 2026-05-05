@@ -106,6 +106,8 @@
       <updated>1777556880389</updated>
       <workItem from="1777556881689" duration="627000" />
       <workItem from="1777559557298" duration="1833000" />
+      <workItem from="1777642891520" duration="2953000" />
+      <workItem from="1777985126270" duration="802000" />
     </task>
     <task id="LOCAL-00001" summary="Add Kafka dependencies and update project configuration">
       <option name="closed" value="true" />
