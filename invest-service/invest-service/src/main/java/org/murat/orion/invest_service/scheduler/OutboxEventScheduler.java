@@ -2,12 +2,14 @@ package org.murat.orion.invest_service.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.murat.orion.invest_service.config.KafkaConfig;
 import org.murat.orion.invest_service.config.RabbitMqConfig;
 import org.murat.orion.invest_service.entity.OutboxEvent;
 import org.murat.orion.invest_service.repository.OutboxEventRepository;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class OutboxEventScheduler {
 
     private final OutboxEventRepository outboxEventRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     private static final Map<String, String> ROUTING_KEY_MAP = Map.of(
             "InvestmentBuyEvent", RabbitMqConfig.ROUTING_KEY_INVEST_BUY,
@@ -63,6 +66,7 @@ public class OutboxEventScheduler {
                         routingKey,
                         message
                 );
+                publishToKafka(event);
                 outboxEventRepository.save(event);
                 event.setProcessed(true);
 
@@ -74,6 +78,14 @@ public class OutboxEventScheduler {
                         event.getId(), event.getEventType(), e.getMessage(), e);
             }
         }
+    }
+    private void publishToKafka(OutboxEvent event) throws Exception {
+        String routingKey = ROUTING_KEY_MAP.getOrDefault(event.getEventType(), "unknown.event");
+        kafkaTemplate.send(
+                KafkaConfig.TOPIC_İNVEST_EVENTS,
+                routingKey,
+                event.getPayload()
+        );
     }
 }
 
