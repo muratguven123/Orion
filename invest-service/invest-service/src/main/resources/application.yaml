@@ -11,9 +11,9 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:guest}
     password: ${RABBITMQ_PASSWORD:guest}
-afka:
-  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-  producer:
+  kafka:
+   bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+   producer:
     key-serializer: org.apache.kafka.common.serialization.StringSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     acks: all
@@ -21,15 +21,15 @@ afka:
       enable.idempotence: true
       max.in.flight.requests.per.connection: 5
     retries: 3
-  consumer:
+   consumer:
     group-id: account-service-group
     auto-offset-reset: earliest
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     enable-auto-commit: false
-  listener:
+   listener:
     ack-mode: manual
-    
+
 springdoc:
   api-docs:
     path: /v3/api-docs
