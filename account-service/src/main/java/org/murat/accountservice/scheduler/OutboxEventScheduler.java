@@ -63,15 +63,8 @@ public class OutboxEventScheduler {
                 messageProperties.setHeader("__TypeId__", typeId);
 
                 Message message = new Message(event.getPayload().getBytes("UTF-8"), messageProperties);
-
-                rabbitTemplate.convertAndSend(
-                        RabbitMQConfig.INTERNAL_EXCHANGE,
-                        routingKey,
-                        message
-                );
                 publishToRabbitMQ(event);
                 publishToKafka(event);
-
                 event.setProcessed(true);
                 outboxEventRepository.save(event);
 
